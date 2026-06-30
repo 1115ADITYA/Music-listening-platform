@@ -56,6 +56,17 @@ export default function Player() {
     if ([1, 2, 5].includes(state)) {
       setIsLoadingVideo(false);
     }
+
+    // Force initial sync when player is ready
+    const currentVideoState = useStore.getState().videoState;
+    let expectedServerTime = currentVideoState.timestamp;
+    if (currentVideoState.isPlaying) {
+      expectedServerTime += (Date.now() - currentVideoState.lastUpdate) / 1000;
+    }
+    
+    if (expectedServerTime > 1.0) {
+      event.target.seekTo(expectedServerTime, true);
+    }
   };
 
   const handleStateChange = (event: YouTubeEvent) => {
