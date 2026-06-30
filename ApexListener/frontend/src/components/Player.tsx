@@ -108,7 +108,7 @@ export default function Player() {
       }
     } else if (playerState === YouTube.PlayerState.ENDED) {
       if (isController) {
-        socket?.emit('video_ended');
+        socket?.emit('video_ended', currentVideoState.videoId);
       }
     }
   };
