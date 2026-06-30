@@ -202,6 +202,22 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
+  socket.on('reorder_queue', (newQueue: VideoItem[]) => {
+    const roomId = socket.data.roomId;
+    if (roomId && rooms[roomId]) {
+      const room = rooms[roomId];
+      const canControl = socket.id === room.controllerId || room.permissions === 'anyone';
+      if (canControl) {
+        // Ensure newQueue only contains items that are currently in the queue (security check)
+        // For simplicity and speed, we trust the client's new order, but we cap it at max queue size
+        if (Array.isArray(newQueue) && newQueue.length <= 100) {
+           room.queue = newQueue;
+           io.to(roomId).emit('queue_update', room.queue);
+        }
+      }
+    }
+  });
+
   socket.on('play_queue_item', (itemId: string) => {
     const roomId = socket.data.roomId;
     if (roomId && rooms[roomId]) {

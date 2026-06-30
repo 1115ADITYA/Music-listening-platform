@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSocket } from './SocketProvider';
 import { useStore } from '@/store/useStore';
-import { Play, Plus, Clock } from 'lucide-react';
+import { Play, Plus, Clock, GripVertical } from 'lucide-react';
+import { Reorder } from 'framer-motion';
 import SearchInput from './SearchInput';
 
 export default function Queue() {
@@ -13,9 +14,22 @@ export default function Queue() {
   const isController = socket?.id === controllerId;
   const canControl = isController || permissions === 'anyone';
 
+  const [localQueue, setLocalQueue] = useState(queue);
+
+  useEffect(() => {
+    setLocalQueue(queue);
+  }, [queue]);
+
   const playNow = (itemId: string) => {
     if (!canControl) return;
     socket?.emit('play_queue_item', itemId);
+  };
+
+  const handleReorder = (newQueue: typeof queue) => {
+    setLocalQueue(newQueue);
+    if (canControl) {
+      socket?.emit('reorder_queue', newQueue);
+    }
   };
 
   return (
@@ -37,41 +51,53 @@ export default function Queue() {
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-2">
-        {queue.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-zinc-500 gap-2">
-            <Clock className="w-8 h-8 opacity-20" />
-            <p className="text-sm">Queue is empty</p>
-          </div>
-        ) : (
-          queue.map((item) => (
-            <div
+      {localQueue.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-full text-zinc-500 gap-2 p-4">
+          <Clock className="w-8 h-8 opacity-20" />
+          <p className="text-sm">Queue is empty</p>
+        </div>
+      ) : (
+        <Reorder.Group 
+          axis="y" 
+          values={localQueue} 
+          onReorder={handleReorder} 
+          className="flex-1 overflow-y-auto p-4 space-y-2"
+        >
+          {localQueue.map((item) => (
+            <Reorder.Item
               key={item.id}
-              className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5 group hover:bg-white/10 transition-colors"
+              value={item}
+              className="flex items-center gap-3 p-3 bg-zinc-900 rounded-xl border border-white/5 group hover:bg-zinc-800 transition-colors relative"
             >
-              <div className="w-16 h-10 bg-black rounded overflow-hidden shrink-0 relative">
+              {canControl && (
+                <div className="cursor-grab active:cursor-grabbing text-zinc-500 hover:text-zinc-300">
+                  <GripVertical className="w-4 h-4" />
+                </div>
+              )}
+              
+              <div className="w-16 h-10 bg-black rounded overflow-hidden shrink-0 relative pointer-events-none">
                 <img
                   src={`https://img.youtube.com/vi/${item.videoId}/default.jpg`}
                   alt="thumbnail"
                   className="w-full h-full object-cover opacity-80"
                 />
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 pointer-events-none">
                 <p className="text-sm font-medium text-zinc-200 truncate">{item.title}</p>
-                <p className="text-xs text-zinc-500 truncate">{item.videoId}</p>
+                <p className="text-[10px] text-zinc-500 truncate">{item.videoId}</p>
               </div>
               {canControl && (
                 <button
                   onClick={() => playNow(item.id)}
-                  className="w-8 h-8 rounded-full bg-purple-600/20 hover:bg-purple-500 text-purple-400 hover:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                  className="w-8 h-8 shrink-0 rounded-full bg-purple-600/20 hover:bg-purple-500 text-purple-400 hover:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
                 >
                   <Play className="w-4 h-4 ml-0.5" />
                 </button>
               )}
-            </div>
-          ))
-        )}
-      </div>
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
+      )}
     </div>
   );
 }
