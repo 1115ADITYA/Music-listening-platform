@@ -66,10 +66,19 @@ export default function Player() {
       setIsLoadingVideo(false);
     }
 
-    if (!canControl) return;
+    const currentVideoState = useStore.getState().videoState;
+
+    if (!canControl) {
+      // Force non-controllers to adhere to the server state immediately
+      if (playerState === YouTube.PlayerState.PLAYING && !currentVideoState.isPlaying) {
+        event.target.pauseVideo();
+      } else if (playerState === YouTube.PlayerState.PAUSED && currentVideoState.isPlaying) {
+        event.target.playVideo();
+      }
+      return;
+    }
     
     const currentTime = event.target.getCurrentTime();
-    const currentVideoState = useStore.getState().videoState;
     
     let expectedServerTime = currentVideoState.timestamp;
     if (currentVideoState.isPlaying) {
@@ -97,7 +106,7 @@ export default function Player() {
     height: '100%',
     width: '100%',
     playerVars: {
-      autoplay: 1,
+      autoplay: videoState.isPlaying ? 1 : 0,
       controls: 1, // Only controller should probably use controls, but let's allow everyone to see them and we enforce via state reset
       disablekb: isController ? 0 : 1, // disable keyboard controls for non-hosts
     },
