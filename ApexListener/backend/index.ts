@@ -20,6 +20,7 @@ interface Room {
   controllerId: string | null;
   videoState: VideoState;
   queue: VideoItem[];
+  messages: any[];
 }
 
 interface User {
@@ -69,7 +70,8 @@ io.on('connection', (socket: Socket) => {
           timestamp: 0,
           lastUpdate: Date.now()
         },
-        queue: []
+        queue: [],
+        messages: []
       };
     }
 
@@ -97,7 +99,8 @@ io.on('connection', (socket: Socket) => {
       users: room.users,
       controllerId: room.controllerId,
       videoState: room.videoState,
-      queue: room.queue
+      queue: room.queue,
+      messages: room.messages
     });
     
     socket.data.roomId = roomId;
@@ -151,14 +154,20 @@ io.on('connection', (socket: Socket) => {
     if (roomId && rooms[roomId]) {
       const user = rooms[roomId].users.find(u => u.id === socket.id);
       if (user) {
-        io.to(roomId).emit('chat_message', {
+        const message = {
           id: Math.random().toString(36).substr(2, 9),
           userId: user.id,
           username: user.username,
           color: user.color,
           text,
           timestamp: Date.now()
-        });
+        };
+        rooms[roomId].messages.push(message);
+        // keep only last 100 messages to avoid memory leak
+        if (rooms[roomId].messages.length > 100) {
+          rooms[roomId].messages.shift();
+        }
+        io.to(roomId).emit('chat_message', message);
       }
     }
   });

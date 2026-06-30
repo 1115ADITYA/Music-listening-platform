@@ -46,6 +46,9 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       setControllerId(state.controllerId);
       setVideoState(state.videoState);
       setQueue(state.queue);
+      if (state.messages) {
+        useStore.getState().setChatMessages(state.messages);
+      }
     });
 
     socketInstance.on('user_joined', (user) => {

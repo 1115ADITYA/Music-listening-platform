@@ -20,18 +20,30 @@ interface VideoItem {
   title: string;
 }
 
+export interface ChatMessage {
+  id: string;
+  userId: string;
+  username: string;
+  color: string;
+  text: string;
+  timestamp: number;
+}
+
 interface AppState {
   roomId: string | null;
   users: User[];
   controllerId: string | null;
   videoState: VideoState;
   queue: VideoItem[];
+  chatMessages: ChatMessage[];
   setRoomId: (id: string | null) => void;
   setUsers: (users: User[]) => void;
   updateUserUsername: (userId: string, newUsername: string) => void;
   setControllerId: (id: string | null) => void;
   setVideoState: (state: VideoState) => void;
   setQueue: (queue: VideoItem[]) => void;
+  setChatMessages: (messages: ChatMessage[]) => void;
+  addChatMessage: (message: ChatMessage) => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -45,6 +57,7 @@ export const useStore = create<AppState>((set) => ({
     lastUpdate: 0
   },
   queue: [],
+  chatMessages: [],
   setRoomId: (roomId) => set({ roomId }),
   setUsers: (users) => set({ users }),
   updateUserUsername: (userId, newUsername) => set((state) => ({
@@ -53,4 +66,6 @@ export const useStore = create<AppState>((set) => ({
   setControllerId: (controllerId) => set({ controllerId }),
   setVideoState: (videoState) => set({ videoState }),
   setQueue: (queue) => set({ queue }),
+  setChatMessages: (chatMessages) => set({ chatMessages }),
+  addChatMessage: (message) => set((state) => ({ chatMessages: [...state.chatMessages, message] })),
 }));

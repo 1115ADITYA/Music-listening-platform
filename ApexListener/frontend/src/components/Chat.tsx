@@ -2,29 +2,21 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useSocket } from './SocketProvider';
+import { useStore, ChatMessage } from '@/store/useStore';
 import { Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface Message {
-  id: string;
-  userId: string;
-  username: string;
-  color: string;
-  text: string;
-  timestamp: number;
-}
-
 export default function Chat() {
   const { socket } = useSocket();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { chatMessages: messages, addChatMessage } = useStore();
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!socket) return;
     
-    const handleMessage = (msg: Message) => {
-      setMessages((prev) => [...prev, msg]);
+    const handleMessage = (msg: ChatMessage) => {
+      addChatMessage(msg);
     };
 
     socket.on('chat_message', handleMessage);
@@ -32,7 +24,7 @@ export default function Chat() {
     return () => {
       socket.off('chat_message', handleMessage);
     };
-  }, [socket]);
+  }, [socket, addChatMessage]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
