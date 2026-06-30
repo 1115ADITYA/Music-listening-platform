@@ -21,6 +21,7 @@ interface Room {
   videoState: VideoState;
   queue: VideoItem[];
   messages: any[];
+  permissions: 'host_only' | 'anyone';
 }
 
 interface User {
@@ -71,7 +72,8 @@ io.on('connection', (socket: Socket) => {
           lastUpdate: Date.now()
         },
         queue: [],
-        messages: []
+        messages: [],
+        permissions: 'host_only'
       };
     }
 
@@ -100,7 +102,8 @@ io.on('connection', (socket: Socket) => {
       controllerId: room.controllerId,
       videoState: room.videoState,
       queue: room.queue,
-      messages: room.messages
+      messages: room.messages,
+      permissions: room.permissions
     });
     
     socket.data.roomId = roomId;
@@ -135,12 +138,25 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
+  // Update Permissions
+  socket.on('update_permissions', (permissions: 'host_only' | 'anyone') => {
+    const roomId = socket.data.roomId;
+    if (roomId && rooms[roomId]) {
+      const room = rooms[roomId];
+      if (socket.id === room.controllerId) {
+        room.permissions = permissions;
+        io.to(roomId).emit('permissions_updated', permissions);
+      }
+    }
+  });
+
   // Sync Video
   socket.on('sync_video', (state: Partial<VideoState>) => {
     const roomId = socket.data.roomId;
     if (roomId && rooms[roomId]) {
       const room = rooms[roomId];
-      if (socket.id === room.controllerId || !room.controllerId) {
+      const canControl = socket.id === room.controllerId || room.permissions === 'anyone';
+      if (canControl || !room.controllerId) {
         room.videoState = { ...room.videoState, ...state, lastUpdate: Date.now() };
         // Broadcast to everyone including sender
         io.to(roomId).emit('video_sync', room.videoState);
@@ -176,8 +192,31 @@ io.on('connection', (socket: Socket) => {
   socket.on('add_to_queue', (item: VideoItem) => {
     const roomId = socket.data.roomId;
     if (roomId && rooms[roomId]) {
-      rooms[roomId].queue.push(item);
-      io.to(roomId).emit('queue_update', rooms[roomId].queue);
+      const room = rooms[roomId];
+      const canControl = socket.id === room.controllerId || room.permissions === 'anyone';
+      if (canControl) {
+        room.queue.push(item);
+        io.to(roomId).emit('queue_update', room.queue);
+      }
+    }
+  });
+
+  socket.on('play_queue_item', (itemId: string) => {
+    const roomId = socket.data.roomId;
+    if (roomId && rooms[roomId]) {
+      const room = rooms[roomId];
+      const canControl = socket.id === room.controllerId || room.permissions === 'anyone';
+      if (canControl) {
+        const itemIndex = room.queue.findIndex(i => i.id === itemId);
+        if (itemIndex !== -1) {
+          const item = room.queue[itemIndex];
+          room.queue.splice(itemIndex, 1);
+          io.to(roomId).emit('queue_update', room.queue);
+          
+          room.videoState = { videoId: item.videoId, isPlaying: true, timestamp: 0, lastUpdate: Date.now() };
+          io.to(roomId).emit('video_sync', room.videoState);
+        }
+      }
     }
   });
 });

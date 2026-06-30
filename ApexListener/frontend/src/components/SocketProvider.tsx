@@ -20,7 +20,7 @@ export const useSocket = () => useContext(SocketContext);
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const { setUsers, setControllerId, setVideoState, setQueue } = useStore();
+  const { setUsers, setControllerId, setVideoState, setQueue, setPermissions } = useStore();
 
   useEffect(() => {
     // In production, use the actual backend URL
@@ -49,6 +49,14 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       if (state.messages) {
         useStore.getState().setChatMessages(state.messages);
       }
+      if (state.permissions) {
+        setPermissions(state.permissions);
+      }
+    });
+
+    socketInstance.on('permissions_updated', (permissions) => {
+      setPermissions(permissions);
+      toast.success(permissions === 'anyone' ? 'Everyone can now control the video!' : 'Only the host can control the video.');
     });
 
     socketInstance.on('user_joined', (user) => {
@@ -90,7 +98,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       socketInstance.disconnect();
     };
-  }, [setUsers, setControllerId, setVideoState, setQueue]);
+  }, [setUsers, setControllerId, setVideoState, setQueue, setPermissions]);
 
   return (
     <SocketContext.Provider value={{ socket, isConnected }}>

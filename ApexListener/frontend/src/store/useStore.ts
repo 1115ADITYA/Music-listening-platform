@@ -36,6 +36,7 @@ interface AppState {
   videoState: VideoState;
   queue: VideoItem[];
   chatMessages: ChatMessage[];
+  permissions: 'host_only' | 'anyone';
   setRoomId: (id: string | null) => void;
   setUsers: (users: User[]) => void;
   updateUserUsername: (userId: string, newUsername: string) => void;
@@ -44,12 +45,14 @@ interface AppState {
   setQueue: (queue: VideoItem[]) => void;
   setChatMessages: (messages: ChatMessage[]) => void;
   addChatMessage: (message: ChatMessage) => void;
+  setPermissions: (permissions: 'host_only' | 'anyone') => void;
 }
 
 export const useStore = create<AppState>((set) => ({
   roomId: null,
   users: [],
   controllerId: null,
+  permissions: 'host_only',
   videoState: {
     videoId: '',
     isPlaying: false,
@@ -68,4 +71,5 @@ export const useStore = create<AppState>((set) => ({
   setQueue: (queue) => set({ queue }),
   setChatMessages: (chatMessages) => set({ chatMessages }),
   addChatMessage: (message) => set((state) => ({ chatMessages: [...state.chatMessages, message] })),
+  setPermissions: (permissions) => set({ permissions }),
 }));

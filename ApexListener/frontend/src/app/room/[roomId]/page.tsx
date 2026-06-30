@@ -9,7 +9,9 @@ import { Copy, Link, Users, MessageSquare, PlaySquare, ArrowLeft } from 'lucide-
 import toast from 'react-hot-toast';
 import Player from '@/components/Player';
 import Chat from '@/components/Chat';
+import Queue from '@/components/Queue';
 import UserList from '@/components/UserList';
+import UsernameModal from '@/components/UsernameModal';
 
 export default function RoomPage({ params }: { params: Promise<{ roomId: string }> }) {
   const unwrappedParams = use(params);
@@ -17,8 +19,11 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
   
   const router = useRouter();
   const { socket, isConnected } = useSocket();
-  const { setRoomId, users, controllerId } = useStore();
+  const { setRoomId, users, controllerId, permissions } = useStore();
   const [activeTab, setActiveTab] = useState<'chat' | 'users' | 'queue'>('chat');
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+
+  const isController = socket?.id === controllerId;
 
   useEffect(() => {
     if (!socket || !isConnected) return;
@@ -27,6 +32,9 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
     
     // Retrieve saved username if it exists
     const savedUsername = localStorage.getItem('syncplay_username');
+    if (!savedUsername) {
+      setShowUsernameModal(true);
+    }
     
     socket.emit('join_room', { roomId, username: savedUsername || undefined });
 
@@ -41,6 +49,12 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
   const copyRoomCode = () => {
     navigator.clipboard.writeText(roomId);
     toast.success('Room code copied!');
+  };
+
+  const togglePermissions = () => {
+    if (!isController) return;
+    const newPerms = permissions === 'host_only' ? 'anyone' : 'host_only';
+    socket?.emit('update_permissions', newPerms);
   };
 
   return (
@@ -64,6 +78,18 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
         </div>
 
         <div className="flex items-center gap-4">
+          {isController && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900/50 rounded-xl border border-white/5 mr-2">
+              <span className="text-xs font-medium text-zinc-300">Anyone can play:</span>
+              <button
+                onClick={togglePermissions}
+                className={`w-10 h-5 rounded-full relative transition-colors ${permissions === 'anyone' ? 'bg-purple-500' : 'bg-zinc-700'}`}
+              >
+                <div className={`w-3 h-3 bg-white rounded-full absolute top-1 transition-all ${permissions === 'anyone' ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
+          )}
+
           <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
             <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500 animate-pulse'}`} />
             <span className="text-xs font-medium text-zinc-300">{isConnected ? 'Connected' : 'Connecting...'}</span>
@@ -114,14 +140,24 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
           <div className="flex-1 overflow-hidden relative">
             {activeTab === 'chat' && <Chat />}
             {activeTab === 'users' && <UserList />}
-            {activeTab === 'queue' && (
-              <div className="p-4 text-center text-zinc-500 text-sm mt-10">
-                Queue feature coming soon!
-              </div>
-            )}
+            {activeTab === 'queue' && <Queue />}
           </div>
         </div>
       </main>
+
+      <UsernameModal
+        isOpen={showUsernameModal}
+        onSave={(name) => {
+          localStorage.setItem('syncplay_username', name);
+          setShowUsernameModal(false);
+          // If already connected, we can emit a rename event, or just rely on reconnect
+          // Since we emit join_room on mount, if we don't have a name, we joined with undefined.
+          // Let's re-emit join_room with the new name to update the backend.
+          if (socket && isConnected) {
+            socket.emit('join_room', { roomId, username: name });
+          }
+        }}
+      />
     </div>
   );
 }

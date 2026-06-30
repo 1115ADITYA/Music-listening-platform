@@ -8,12 +8,13 @@ import { Search, PlaySquare, Loader2 } from 'lucide-react';
 
 export default function Player() {
   const { socket } = useSocket();
-  const { videoState, controllerId, users } = useStore();
+  const { videoState, controllerId, permissions } = useStore();
   const [inputUrl, setInputUrl] = useState('');
   const [isLoadingVideo, setIsLoadingVideo] = useState(false);
   const playerRef = useRef<YouTubePlayer | null>(null);
   
   const isController = socket?.id === controllerId;
+  const canControl = isController || permissions === 'anyone';
 
   // Sync logic
   useEffect(() => {
@@ -26,27 +27,27 @@ export default function Player() {
     if (!playerRef.current) return;
     const player = playerRef.current;
     
-    // Avoid seeking if we are close enough (within 300ms)
-    const currentServerTime = videoState.timestamp;
-    
-    // We only force seek if we are NOT the controller. The controller dictates state.
-    if (!isController) {
-      if (videoState.videoId && player.getVideoData().video_id !== videoState.videoId) {
-        // ID changed handled by component prop, but seek needs handling
-      }
-
-      if (videoState.isPlaying) {
-        player.playVideo();
-      } else {
-        player.pauseVideo();
-      }
-      
-      const currentTime = player.getCurrentTime();
-      if (Math.abs(currentTime - currentServerTime) > 0.3) {
-        player.seekTo(currentServerTime, true);
-      }
+    // We calculate the actual server time by adding elapsed time since last update if playing
+    let currentServerTime = videoState.timestamp;
+    if (videoState.isPlaying) {
+      currentServerTime += (Date.now() - videoState.lastUpdate) / 1000;
     }
-  }, [videoState, isController]);
+    
+    if (videoState.videoId && player.getVideoData().video_id !== videoState.videoId) {
+      // ID changed handled by component prop, but seek needs handling
+    }
+
+    if (videoState.isPlaying) {
+      player.playVideo();
+    } else {
+      player.pauseVideo();
+    }
+    
+    const currentTime = player.getCurrentTime();
+    if (Math.abs(currentTime - currentServerTime) > 1.0) { // Increased threshold slightly to avoid jitter
+      player.seekTo(currentServerTime, true);
+    }
+  }, [videoState]);
 
   const handleReady = (event: YouTubeEvent) => {
     playerRef.current = event.target;
@@ -65,7 +66,7 @@ export default function Player() {
       setIsLoadingVideo(false);
     }
 
-    if (!isController) return;
+    if (!canControl) return;
     
     const currentTime = event.target.getCurrentTime();
 
@@ -84,7 +85,7 @@ export default function Player() {
 
   const loadVideo = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isController) return;
+    if (!canControl) return;
 
     const id = extractVideoId(inputUrl);
     if (id) {
@@ -109,7 +110,7 @@ export default function Player() {
   return (
     <div className="flex flex-col gap-6 w-full h-full max-w-5xl mx-auto">
       {/* Controller Toolbar */}
-      {isController && (
+      {canControl && (
         <div className="w-full">
           <form onSubmit={loadVideo} className="flex gap-2">
             <div className="relative flex-1">
@@ -144,7 +145,7 @@ export default function Player() {
                 <p className="text-purple-400 font-medium animate-pulse">Syncing Video...</p>
               </div>
             )}
-            {!isController && <div className="absolute inset-0 z-10" onClick={(e) => {
+            {!canControl && <div className="absolute inset-0 z-10" onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
             }} />}
