@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 import { useSocket } from './SocketProvider';
 import { useStore } from '@/store/useStore';
-import { PlaySquare, Loader2 } from 'lucide-react';
+import { PlaySquare, Loader2, Search } from 'lucide-react';
 import SearchInput from './SearchInput';
 
 export default function Player() {
@@ -130,6 +130,7 @@ export default function Player() {
         <div className="w-full flex">
           <SearchInput 
             buttonLabel="Load Video"
+            buttonIcon={<Search className="w-4 h-4" />}
             onSelect={(id, title) => {
               setIsLoadingVideo(true);
               socket?.emit('sync_video', { videoId: id, isPlaying: true, timestamp: 0 });
