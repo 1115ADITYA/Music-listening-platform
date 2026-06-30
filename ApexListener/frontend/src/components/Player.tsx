@@ -4,12 +4,12 @@ import { useState, useEffect, useRef } from 'react';
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 import { useSocket } from './SocketProvider';
 import { useStore } from '@/store/useStore';
-import { Search, PlaySquare, Loader2 } from 'lucide-react';
+import { PlaySquare, Loader2 } from 'lucide-react';
+import SearchInput from './SearchInput';
 
 export default function Player() {
   const { socket } = useSocket();
   const { videoState, controllerId, permissions } = useStore();
-  const [inputUrl, setInputUrl] = useState('');
   const [isLoadingVideo, setIsLoadingVideo] = useState(false);
   const playerRef = useRef<YouTubePlayer | null>(null);
   
@@ -93,26 +93,6 @@ export default function Player() {
     }
   };
 
-  const extractVideoId = (url: string) => {
-    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[7].length === 11) ? match[7] : false;
-  };
-
-  const loadVideo = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!canControl) return;
-
-    const id = extractVideoId(inputUrl);
-    if (id) {
-      setIsLoadingVideo(true);
-      socket?.emit('sync_video', { videoId: id, isPlaying: true, timestamp: 0 });
-      setInputUrl('');
-    } else {
-      alert('Invalid YouTube URL');
-    }
-  };
-
   const opts = {
     height: '100%',
     width: '100%',
@@ -127,27 +107,14 @@ export default function Player() {
     <div className="flex flex-col gap-6 w-full h-full max-w-5xl mx-auto">
       {/* Controller Toolbar */}
       {canControl && (
-        <div className="w-full">
-          <form onSubmit={loadVideo} className="flex gap-2">
-            <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="w-5 h-5 text-zinc-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Paste YouTube URL..."
-                value={inputUrl}
-                onChange={(e) => setInputUrl(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-zinc-900/50 border border-white/10 rounded-2xl focus:outline-none focus:border-purple-500/50 shadow-2xl text-base"
-              />
-            </div>
-            <button
-              type="submit"
-              className="px-8 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-2xl transition-colors shadow-lg shadow-purple-500/20"
-            >
-              Load Video
-            </button>
-          </form>
+        <div className="w-full flex">
+          <SearchInput 
+            buttonLabel="Load Video"
+            onSelect={(id, title) => {
+              setIsLoadingVideo(true);
+              socket?.emit('sync_video', { videoId: id, isPlaying: true, timestamp: 0 });
+            }}
+          />
         </div>
       )}
 

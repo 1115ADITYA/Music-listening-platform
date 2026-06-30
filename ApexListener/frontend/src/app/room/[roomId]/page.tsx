@@ -156,11 +156,9 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
         onSave={(name) => {
           localStorage.setItem('syncplay_username', name);
           setShowUsernameModal(false);
-          // If already connected, we can emit a rename event, or just rely on reconnect
-          // Since we emit join_room on mount, if we don't have a name, we joined with undefined.
-          // Let's re-emit join_room with the new name to update the backend.
+          // If already connected, emit update_username to change the randomly assigned name
           if (socket && isConnected) {
-            socket.emit('join_room', { roomId, username: name });
+            socket.emit('update_username', name);
           }
         }}
       />

@@ -4,37 +4,14 @@ import { useState } from 'react';
 import { useSocket } from './SocketProvider';
 import { useStore } from '@/store/useStore';
 import { Play, Plus, Clock } from 'lucide-react';
+import SearchInput from './SearchInput';
 
 export default function Queue() {
   const { socket } = useSocket();
   const { queue, permissions, controllerId } = useStore();
-  const [inputUrl, setInputUrl] = useState('');
   
   const isController = socket?.id === controllerId;
   const canControl = isController || permissions === 'anyone';
-
-  const extractVideoId = (url: string) => {
-    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[7].length === 11) ? match[7] : false;
-  };
-
-  const addToQueue = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!canControl) return;
-
-    const id = extractVideoId(inputUrl);
-    if (id) {
-      socket?.emit('add_to_queue', {
-        id: Math.random().toString(36).substr(2, 9),
-        videoId: id,
-        title: `YouTube Video (${id})` // We can't fetch real title easily without API
-      });
-      setInputUrl('');
-    } else {
-      alert('Invalid YouTube URL');
-    }
-  };
 
   const playNow = (itemId: string) => {
     if (!canControl) return;
@@ -44,24 +21,20 @@ export default function Queue() {
   return (
     <div className="flex flex-col h-full absolute inset-0">
       {canControl && (
-        <form onSubmit={addToQueue} className="p-4 border-b border-white/5 bg-zinc-900/50 shrink-0">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={inputUrl}
-              onChange={(e) => setInputUrl(e.target.value)}
-              placeholder="Paste URL to queue..."
-              className="flex-1 px-3 py-2 bg-black/50 border border-white/10 rounded-lg focus:outline-none focus:border-purple-500/50 text-sm"
-            />
-            <button
-              type="submit"
-              disabled={!inputUrl.trim()}
-              className="px-3 py-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 rounded-lg flex items-center justify-center transition-colors"
-            >
-              <Plus className="w-4 h-4 text-white" />
-            </button>
-          </div>
-        </form>
+        <div className="p-4 border-b border-white/5 bg-zinc-900/50 shrink-0 flex">
+          <SearchInput
+            placeholder="Search or paste URL to queue..."
+            buttonLabel="Add"
+            buttonIcon={<Plus className="w-4 h-4 text-white" />}
+            onSelect={(videoId, title) => {
+              socket?.emit('add_to_queue', {
+                id: Math.random().toString(36).substr(2, 9),
+                videoId: videoId,
+                title: title || `YouTube Video (${videoId})`
+              });
+            }}
+          />
+        </div>
       )}
 
       <div className="flex-1 overflow-y-auto p-4 space-y-2">

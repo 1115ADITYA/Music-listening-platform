@@ -1,6 +1,7 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
+import ytSearch from 'yt-search';
 import cors from 'cors';
 
 const app = express();
@@ -220,12 +221,33 @@ io.on('connection', (socket: Socket) => {
     }
   });
 
-  socket.on('video_ended', () => {
+  socket.on('search_youtube', async (query: string, callback?: (results: any[]) => void) => {
+    try {
+      const r = await ytSearch(query);
+      const videos = r.videos.slice(0, 10).map(v => ({
+        id: v.videoId,
+        title: v.title,
+        thumbnail: v.thumbnail,
+        duration: v.timestamp
+      }));
+      if (callback) callback(videos);
+      socket.emit('search_results', videos);
+    } catch (error) {
+      console.error('YouTube search error:', error);
+      if (callback) callback([]);
+      socket.emit('search_results', []);
+    }
+  });
+
+  socket.on('video_ended', (endedVideoId: string) => {
     const roomId = socket.data.roomId;
     if (roomId && rooms[roomId]) {
       const room = rooms[roomId];
-      // Only the controller can trigger auto-play to avoid multiple triggers
-      if (socket.id === room.controllerId) {
+      const canControl = socket.id === room.controllerId || room.permissions === 'anyone';
+      
+      // We check if the video that ended is STILL the current video in the room state.
+      // This prevents multiple users from triggering the queue pop multiple times!
+      if (canControl && room.videoState.videoId === endedVideoId && room.videoState.isPlaying) {
         if (room.queue.length > 0) {
           const item = room.queue.shift()!;
           io.to(roomId).emit('queue_update', room.queue);
