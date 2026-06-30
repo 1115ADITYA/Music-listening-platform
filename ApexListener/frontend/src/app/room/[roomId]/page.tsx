@@ -12,6 +12,7 @@ import Chat from '@/components/Chat';
 import Queue from '@/components/Queue';
 import UserList from '@/components/UserList';
 import UsernameModal from '@/components/UsernameModal';
+import QueueFab from '@/components/QueueFab';
 
 export default function RoomPage({ params }: { params: Promise<{ roomId: string }> }) {
   const unwrappedParams = use(params);
@@ -106,7 +107,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         {/* Left: Player Area */}
         <div className="flex-1 flex flex-col p-4 lg:p-6 overflow-y-auto">
           <Player />
@@ -142,6 +143,11 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
             {activeTab === 'users' && <UserList />}
             {activeTab === 'queue' && <Queue />}
           </div>
+        </div>
+        
+        {/* Floating Action Button for Queue (Mobile/Desktop overlay) */}
+        <div className="fixed bottom-6 right-6 z-40 lg:hidden">
+            <QueueFab />
         </div>
       </main>
 

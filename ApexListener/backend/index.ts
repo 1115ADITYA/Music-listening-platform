@@ -219,6 +219,27 @@ io.on('connection', (socket: Socket) => {
       }
     }
   });
+
+  socket.on('video_ended', () => {
+    const roomId = socket.data.roomId;
+    if (roomId && rooms[roomId]) {
+      const room = rooms[roomId];
+      // Only the controller can trigger auto-play to avoid multiple triggers
+      if (socket.id === room.controllerId) {
+        if (room.queue.length > 0) {
+          const item = room.queue.shift()!;
+          io.to(roomId).emit('queue_update', room.queue);
+          
+          room.videoState = { videoId: item.videoId, isPlaying: true, timestamp: 0, lastUpdate: Date.now() };
+          io.to(roomId).emit('video_sync', room.videoState);
+        } else {
+          // If queue is empty, just update state to not playing
+          room.videoState = { ...room.videoState, isPlaying: false, timestamp: 0, lastUpdate: Date.now() };
+          io.to(roomId).emit('video_sync', room.videoState);
+        }
+      }
+    }
+  });
 });
 
 const PORT = process.env.PORT || 3001;

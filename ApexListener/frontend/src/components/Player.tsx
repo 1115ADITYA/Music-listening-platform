@@ -71,9 +71,17 @@ export default function Player() {
     const currentTime = event.target.getCurrentTime();
 
     if (playerState === YouTube.PlayerState.PLAYING) {
-      socket?.emit('sync_video', { isPlaying: true, timestamp: currentTime });
+      if (!useStore.getState().videoState.isPlaying) {
+        socket?.emit('sync_video', { isPlaying: true, timestamp: currentTime });
+      }
     } else if (playerState === YouTube.PlayerState.PAUSED) {
-      socket?.emit('sync_video', { isPlaying: false, timestamp: currentTime });
+      if (useStore.getState().videoState.isPlaying) {
+        socket?.emit('sync_video', { isPlaying: false, timestamp: currentTime });
+      }
+    } else if (playerState === YouTube.PlayerState.ENDED) {
+      if (isController) {
+        socket?.emit('video_ended');
+      }
     }
   };
 
