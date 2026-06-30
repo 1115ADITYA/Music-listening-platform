@@ -61,48 +61,47 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-zinc-950">
       {/* Header */}
-      <header className="glass px-4 md:px-6 py-3 md:py-4 flex items-center justify-between z-10 shrink-0">
-        <div className="flex items-center gap-2 md:gap-4">
+      <header className="glass px-6 py-4 flex items-center justify-between z-10 shrink-0">
+        <div className="flex items-center gap-4">
           <button 
             onClick={() => router.push('/')}
-            className="p-1.5 md:p-2 hover:bg-white/10 rounded-xl transition-colors"
+            className="p-2 hover:bg-white/10 rounded-xl transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-zinc-400 hover:text-white" />
           </button>
           <div>
-            <h1 className="font-bold text-base md:text-lg tracking-tight truncate max-w-[120px] md:max-w-none">ApexListener</h1>
-            <div className="flex items-center gap-2 text-[10px] md:text-xs text-zinc-400 font-mono">
-              <span className="hidden sm:inline">Code: </span><span className="truncate max-w-[60px] md:max-w-none">{roomId}</span>
-              <button onClick={copyRoomCode} className="hover:text-white p-1 -m-1"><Copy className="w-3 h-3" /></button>
+            <h1 className="font-bold text-lg tracking-tight">ApexListener Room</h1>
+            <div className="flex items-center gap-2 text-xs text-zinc-400 font-mono">
+              <span>Code: {roomId}</span>
+              <button onClick={copyRoomCode} className="hover:text-white"><Copy className="w-3 h-3" /></button>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-4">
           {isController && (
-            <div className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 bg-zinc-900/50 rounded-xl border border-white/5">
-              <span className="text-[10px] md:text-xs font-medium text-zinc-300 hidden sm:inline">Anyone can play:</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900/50 rounded-xl border border-white/5 mr-2">
+              <span className="text-xs font-medium text-zinc-300">Anyone can play:</span>
               <button
                 onClick={togglePermissions}
-                className={`w-8 md:w-10 h-4 md:h-5 rounded-full relative transition-colors ${permissions === 'anyone' ? 'bg-purple-500' : 'bg-zinc-700'}`}
+                className={`w-10 h-5 rounded-full relative transition-colors ${permissions === 'anyone' ? 'bg-purple-500' : 'bg-zinc-700'}`}
               >
-                <div className={`w-2.5 md:w-3 h-2.5 md:h-3 bg-white rounded-full absolute top-[3px] md:top-1 transition-all ${permissions === 'anyone' ? 'left-5 md:left-6' : 'left-0.5 md:left-1'}`} />
+                <div className={`w-3 h-3 bg-white rounded-full absolute top-1 transition-all ${permissions === 'anyone' ? 'left-6' : 'left-1'}`} />
               </button>
             </div>
           )}
 
-          <div className="flex items-center gap-1.5 px-2 md:px-3 py-1.5 bg-white/5 rounded-full border border-white/10 hidden sm:flex">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
             <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500 animate-pulse'}`} />
-            <span className="text-[10px] md:text-xs font-medium text-zinc-300">{isConnected ? 'Connected' : 'Connecting'}</span>
+            <span className="text-xs font-medium text-zinc-300">{isConnected ? 'Connected' : 'Connecting...'}</span>
           </div>
           
           <button 
             onClick={copyInviteLink}
-            className="px-3 md:px-4 py-1.5 md:py-2 bg-purple-600 hover:bg-purple-500 text-white text-[10px] md:text-sm font-semibold rounded-xl flex items-center gap-1 md:gap-2 transition-colors shadow-lg shadow-purple-500/20"
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold rounded-xl flex items-center gap-2 transition-colors shadow-lg shadow-purple-500/20"
           >
-            <Link className="w-3 h-3 md:w-4 md:h-4" />
-            <span className="hidden sm:inline">Invite Friends</span>
-            <span className="sm:hidden">Invite</span>
+            <Link className="w-4 h-4" />
+            Invite Friends
           </button>
         </div>
       </header>
@@ -110,14 +109,14 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
       {/* Main Content */}
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         {/* Left: Player Area */}
-        <div className="w-full lg:flex-1 flex flex-col p-2 md:p-4 lg:p-6 overflow-y-auto shrink-0">
+        <div className="flex-1 flex flex-col p-4 lg:p-6 overflow-y-auto">
           <Player />
         </div>
 
         {/* Right: Sidebar */}
-        <div className="w-full lg:w-96 bg-zinc-900/50 border-t lg:border-t-0 lg:border-l border-white/5 flex flex-col flex-1 lg:h-full overflow-hidden">
+        <div className="w-full lg:w-96 bg-zinc-900/50 border-l border-white/5 flex flex-col shrink-0 lg:h-full h-[50vh]">
           {/* Tabs */}
-          <div className="flex p-2 gap-1 md:gap-2 border-b border-white/5 shrink-0">
+          <div className="flex p-2 gap-2 border-b border-white/5 shrink-0">
             <button 
               onClick={() => setActiveTab('chat')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'chat' ? 'bg-white/10 text-white' : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-200'}`}

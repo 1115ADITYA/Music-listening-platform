@@ -85,17 +85,17 @@ export default function SearchInput({ onSelect, placeholder = "Search or paste Y
             onFocus={() => {
               if (results.length > 0) setIsOpen(true);
             }}
-            className="w-full pl-10 md:pl-12 pr-4 py-3 md:py-4 bg-zinc-900/50 border border-white/10 rounded-xl md:rounded-2xl focus:outline-none focus:border-purple-500/50 shadow-2xl text-sm md:text-base text-white"
+            className="w-full pl-12 pr-4 py-4 bg-zinc-900/50 border border-white/10 rounded-2xl focus:outline-none focus:border-purple-500/50 shadow-2xl text-base text-white"
           />
         </div>
         {buttonLabel && (
           <button
             type="submit"
             disabled={!query.trim()}
-            className="px-4 md:px-6 py-3 md:py-4 bg-purple-600 hover:bg-purple-500 text-white text-sm md:text-base font-semibold rounded-xl md:rounded-2xl transition-colors shadow-lg shadow-purple-500/20 disabled:opacity-50 flex items-center justify-center gap-2 shrink-0"
+            className="px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-2xl transition-colors shadow-lg shadow-purple-500/20 disabled:opacity-50 flex items-center gap-2 shrink-0"
           >
             {buttonIcon}
-            <span className={buttonIcon ? "hidden sm:inline" : ""}>{buttonLabel}</span>
+            {buttonLabel}
           </button>
         )}
       </form>
