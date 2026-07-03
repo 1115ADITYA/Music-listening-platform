@@ -30,6 +30,7 @@ interface User {
   username: string;
   color: string;
   avatarId: number;
+  micOn?: boolean;
 }
 
 interface VideoState {
@@ -89,7 +90,8 @@ io.on('connection', (socket: Socket) => {
       id: socket.id,
       username: username || generateUsername(),
       color: generateColor(),
-      avatarId: Math.floor(Math.random() * 10)
+      avatarId: Math.floor(Math.random() * 10),
+      micOn: false
     };
 
     room.users.push(newUser);
@@ -119,6 +121,30 @@ io.on('connection', (socket: Socket) => {
         io.to(roomId).emit('username_updated', { userId: socket.id, newUsername });
       }
     }
+  });
+
+  socket.on('update_mic', (micOn: boolean) => {
+    const roomId = socket.data.roomId;
+    if (roomId && rooms[roomId]) {
+      const user = rooms[roomId].users.find(u => u.id === socket.id);
+      if (user) {
+        user.micOn = micOn;
+        io.to(roomId).emit('mic_updated', { userId: socket.id, micOn });
+      }
+    }
+  });
+
+  // WebRTC Signaling
+  socket.on('webrtc_offer', ({ targetUserId, offer }) => {
+    socket.to(targetUserId).emit('webrtc_offer', { senderId: socket.id, offer });
+  });
+
+  socket.on('webrtc_answer', ({ targetUserId, answer }) => {
+    socket.to(targetUserId).emit('webrtc_answer', { senderId: socket.id, answer });
+  });
+
+  socket.on('webrtc_ice_candidate', ({ targetUserId, candidate }) => {
+    socket.to(targetUserId).emit('webrtc_ice_candidate', { senderId: socket.id, candidate });
   });
 
   socket.on('disconnect', () => {

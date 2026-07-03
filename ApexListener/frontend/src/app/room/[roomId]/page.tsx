@@ -13,6 +13,7 @@ import Queue from '@/components/Queue';
 import UserList from '@/components/UserList';
 import UsernameModal from '@/components/UsernameModal';
 import QueueFab from '@/components/QueueFab';
+import { MicToggle } from '@/components/MicToggle';
 
 export default function RoomPage({ params }: { params: Promise<{ roomId: string }> }) {
   const unwrappedParams = use(params);
@@ -96,6 +97,8 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
             <span className="text-xs font-medium text-zinc-300">{isConnected ? 'Connected' : 'Connecting...'}</span>
           </div>
           
+          <MicToggle />
+
           <button 
             onClick={copyInviteLink}
             className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold rounded-xl flex items-center gap-2 transition-colors shadow-lg shadow-purple-500/20"

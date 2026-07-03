@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useStore } from '@/store/useStore';
 import { useSocket } from './SocketProvider';
-import { Crown, Pencil, Check } from 'lucide-react';
+import { Crown, Pencil, Check, Mic, MicOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function UserList() {
@@ -81,7 +81,18 @@ export default function UserList() {
                       You
                     </span>
                   )}
+                  
+                  {user.micOn ? (
+                    <div className="w-6 h-6 flex items-center justify-center bg-green-500/20 text-green-500 rounded-full ml-auto" title="Mic On">
+                      <Mic className="w-3 h-3" />
+                    </div>
+                  ) : (
+                    <div className="w-6 h-6 flex items-center justify-center bg-zinc-800/50 text-zinc-500 rounded-full ml-auto" title="Mic Off">
+                      <MicOff className="w-3 h-3" />
+                    </div>
+                  )}
                 </div>
+
                 {isController && (
                   <div className="w-8 h-8 flex items-center justify-center bg-yellow-500/20 text-yellow-500 rounded-full" title="Room Host">
                     <Crown className="w-4 h-4" />

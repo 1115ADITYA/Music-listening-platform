@@ -85,6 +85,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       useStore.getState().updateUserUsername(userId, newUsername);
     });
 
+    socketInstance.on('mic_updated', ({ userId, micOn }) => {
+      useStore.getState().updateUserMic(userId, micOn);
+    });
+
     socketInstance.on('video_sync', (state) => {
       setVideoState(state);
     });

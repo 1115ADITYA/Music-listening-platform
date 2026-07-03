@@ -5,6 +5,7 @@ interface User {
   username: string;
   color: string;
   avatarId: number;
+  micOn?: boolean;
 }
 
 interface VideoState {
@@ -40,6 +41,7 @@ interface AppState {
   setRoomId: (id: string | null) => void;
   setUsers: (users: User[]) => void;
   updateUserUsername: (userId: string, newUsername: string) => void;
+  updateUserMic: (userId: string, micOn: boolean) => void;
   setControllerId: (id: string | null) => void;
   setVideoState: (state: VideoState) => void;
   setQueue: (queue: VideoItem[]) => void;
@@ -65,6 +67,9 @@ export const useStore = create<AppState>((set) => ({
   setUsers: (users) => set({ users }),
   updateUserUsername: (userId, newUsername) => set((state) => ({
     users: state.users.map(u => u.id === userId ? { ...u, username: newUsername } : u)
+  })),
+  updateUserMic: (userId, micOn) => set((state) => ({
+    users: state.users.map(u => u.id === userId ? { ...u, micOn } : u)
   })),
   setControllerId: (controllerId) => set({ controllerId }),
   setVideoState: (videoState) => set({ videoState }),
