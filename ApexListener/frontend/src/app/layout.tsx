@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { SocketProvider } from "@/components/SocketProvider";
 import { Toaster } from "react-hot-toast";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
               border: '1px solid #27272a',
             },
           }} />
+          <Analytics />
         </SocketProvider>
       </body>
     </html>
