@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { Play, Users, Zap, ArrowRight, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -65,11 +64,8 @@ export default function LandingPage() {
       </nav>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-20 z-10 relative">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto"
+        <div
+          className="text-center max-w-3xl mx-auto animate-fade-in-up"
         >
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
             Watch YouTube <br />
@@ -105,19 +101,17 @@ export default function LandingPage() {
                 type="submit"
                 disabled={!joinCode.trim() || isJoining}
                 className="absolute right-2 top-2 bottom-2 aspect-square bg-zinc-800 rounded-xl flex items-center justify-center hover:bg-zinc-700 transition-colors disabled:opacity-50"
+                aria-label="Join Room"
               >
                 {isJoining ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
               </button>
             </form>
           </div>
-        </motion.div>
+        </div>
 
         {/* Features Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto w-full"
+        <div
+          className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto w-full animate-fade-in-up-delayed"
           id="features"
         >
           <div className="glass-card p-6 rounded-3xl">
@@ -149,7 +143,7 @@ export default function LandingPage() {
               Collaboratively build a playlist. Anyone can add, reorder, or skip videos in real-time.
             </p>
           </div>
-        </motion.div>
+        </div>
       </main>
 
       <footer className="py-8 text-center text-zinc-400 text-sm glass mt-auto border-t-0">
