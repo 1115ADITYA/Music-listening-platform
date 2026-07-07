@@ -58,7 +58,7 @@ export default function LandingPage() {
           </div>
           <span className="font-bold text-xl tracking-tight">ApexListener</span>
         </div>
-        <div className="flex gap-6 text-sm font-medium text-zinc-400">
+        <div className="flex gap-6 text-sm font-medium text-zinc-300">
           <a href="#features" className="hover:text-white transition-colors">Features</a>
           <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
         </div>
@@ -77,7 +77,7 @@ export default function LandingPage() {
               Together.
             </span>
           </h1>
-          <p className="text-lg md:text-xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-zinc-300 mb-12 max-w-2xl mx-auto leading-relaxed">
             Experience perfectly synchronized playback with friends. No login required. 
             Just create a room, share the link, and start watching.
           </p>
@@ -124,8 +124,8 @@ export default function LandingPage() {
             <div className="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-4 text-purple-400">
               <Zap className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Instant Sync</h3>
-            <p className="text-zinc-400 text-sm leading-relaxed">
+            <h2 className="text-xl font-semibold mb-2">Instant Sync</h2>
+            <p className="text-zinc-300 text-sm leading-relaxed">
               Sub-second synchronization ensures everyone watches exactly the same frame at the same time.
             </p>
           </div>
@@ -134,8 +134,8 @@ export default function LandingPage() {
             <div className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4 text-blue-400">
               <Users className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">No Sign Up</h3>
-            <p className="text-zinc-400 text-sm leading-relaxed">
+            <h2 className="text-xl font-semibold mb-2">No Sign Up</h2>
+            <p className="text-zinc-300 text-sm leading-relaxed">
               Jump straight into the action. Anonymous, instantly generated profiles for everyone.
             </p>
           </div>
@@ -144,15 +144,15 @@ export default function LandingPage() {
             <div className="w-12 h-12 bg-pink-500/20 rounded-2xl flex items-center justify-center mb-4 text-pink-400">
               <Play className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Shared Queue</h3>
-            <p className="text-zinc-400 text-sm leading-relaxed">
+            <h2 className="text-xl font-semibold mb-2">Shared Queue</h2>
+            <p className="text-zinc-300 text-sm leading-relaxed">
               Collaboratively build a playlist. Anyone can add, reorder, or skip videos in real-time.
             </p>
           </div>
         </motion.div>
       </main>
 
-      <footer className="py-8 text-center text-zinc-500 text-sm glass mt-auto border-t-0">
+      <footer className="py-8 text-center text-zinc-400 text-sm glass mt-auto border-t-0">
         <p>Built with Next.js, Socket.IO, and Supabase.</p>
       </footer>
     </div>

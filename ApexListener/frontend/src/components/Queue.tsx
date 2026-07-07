@@ -52,7 +52,7 @@ export default function Queue() {
       )}
 
       {localQueue.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-full text-zinc-500 gap-2 p-4">
+        <div className="flex flex-col items-center justify-center h-full text-zinc-400 gap-2 p-4">
           <Clock className="w-8 h-8 opacity-20" />
           <p className="text-sm">Queue is empty</p>
         </div>
@@ -70,7 +70,7 @@ export default function Queue() {
               className="flex items-center gap-3 p-3 bg-zinc-900 rounded-xl border border-white/5 group hover:bg-zinc-800 transition-colors relative"
             >
               {canControl && (
-                <div className="cursor-grab active:cursor-grabbing text-zinc-500 hover:text-zinc-300">
+                <div className="cursor-grab active:cursor-grabbing text-zinc-400 hover:text-zinc-300">
                   <GripVertical className="w-4 h-4" />
                 </div>
               )}
@@ -84,12 +84,13 @@ export default function Queue() {
               </div>
               <div className="flex-1 min-w-0 pointer-events-none">
                 <p className="text-sm font-medium text-zinc-200 truncate">{item.title}</p>
-                <p className="text-[10px] text-zinc-500 truncate">{item.videoId}</p>
+                <p className="text-[10px] text-zinc-400 truncate">{item.videoId}</p>
               </div>
               {canControl && (
                 <button
                   onClick={() => playNow(item.id)}
                   className="w-8 h-8 shrink-0 rounded-full bg-purple-600/20 hover:bg-purple-500 text-purple-400 hover:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                  aria-label="Play now"
                 >
                   <Play className="w-4 h-4 ml-0.5" />
                 </button>

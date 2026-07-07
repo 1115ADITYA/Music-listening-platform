@@ -67,14 +67,15 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
           <button 
             onClick={() => router.push('/')}
             className="p-2 hover:bg-white/10 rounded-xl transition-colors"
+            aria-label="Go back"
           >
-            <ArrowLeft className="w-5 h-5 text-zinc-400 hover:text-white" />
+            <ArrowLeft className="w-5 h-5 text-zinc-300 hover:text-white" />
           </button>
           <div>
             <h1 className="font-bold text-lg tracking-tight">ApexListener Room</h1>
-            <div className="flex items-center gap-2 text-xs text-zinc-400 font-mono">
+            <div className="flex items-center gap-2 text-xs text-zinc-300 font-mono">
               <span>Code: {roomId}</span>
-              <button onClick={copyRoomCode} className="hover:text-white"><Copy className="w-3 h-3" /></button>
+              <button onClick={copyRoomCode} className="hover:text-white" aria-label="Copy room code"><Copy className="w-3 h-3" /></button>
             </div>
           </div>
         </div>
@@ -86,6 +87,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
               <button
                 onClick={togglePermissions}
                 className={`w-10 h-5 rounded-full relative transition-colors ${permissions === 'anyone' ? 'bg-purple-500' : 'bg-zinc-700'}`}
+                aria-label="Toggle permissions"
               >
                 <div className={`w-3 h-3 bg-white rounded-full absolute top-1 transition-all ${permissions === 'anyone' ? 'left-6' : 'left-1'}`} />
               </button>
@@ -122,19 +124,19 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
           <div className="flex p-2 gap-2 border-b border-white/5 shrink-0">
             <button 
               onClick={() => setActiveTab('chat')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'chat' ? 'bg-white/10 text-white' : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-200'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'chat' ? 'bg-white/10 text-white' : 'text-zinc-300 hover:bg-white/5 hover:text-zinc-200'}`}
             >
               <MessageSquare className="w-4 h-4" /> Chat
             </button>
             <button 
               onClick={() => setActiveTab('users')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'users' ? 'bg-white/10 text-white' : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-200'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'users' ? 'bg-white/10 text-white' : 'text-zinc-300 hover:bg-white/5 hover:text-zinc-200'}`}
             >
               <Users className="w-4 h-4" /> {users.length} Users
             </button>
             <button 
               onClick={() => setActiveTab('queue')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'queue' ? 'bg-white/10 text-white' : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-200'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'queue' ? 'bg-white/10 text-white' : 'text-zinc-300 hover:bg-white/5 hover:text-zinc-200'}`}
             >
               <PlaySquare className="w-4 h-4" /> Queue
             </button>

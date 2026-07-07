@@ -28,11 +28,11 @@ export default function QueueFab() {
             className="mb-4 bg-zinc-900 border border-white/10 p-4 rounded-2xl shadow-2xl w-80"
           >
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-white flex items-center gap-2">
                 <ListMusic className="w-4 h-4 text-purple-400" />
                 Add to Queue
-              </h3>
-              <button onClick={() => setIsOpen(false)} className="text-zinc-500 hover:text-white">
+              </h2>
+              <button onClick={() => setIsOpen(false)} className="text-zinc-400 hover:text-white" aria-label="Close">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -57,6 +57,7 @@ export default function QueueFab() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-14 h-14 bg-purple-600 hover:bg-purple-500 text-white rounded-full shadow-lg shadow-purple-500/30 flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
+        aria-label={isOpen ? "Close queue" : "Open queue"}
       >
         {isOpen ? <X className="w-6 h-6" /> : <ListMusic className="w-6 h-6" />}
       </button>

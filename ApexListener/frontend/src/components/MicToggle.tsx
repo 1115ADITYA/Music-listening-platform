@@ -15,6 +15,7 @@ export const MicToggle = () => {
             : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80'
         }`}
         title={isMicOn ? "Turn off microphone" : "Turn on microphone"}
+        aria-label={isMicOn ? "Turn off microphone" : "Turn on microphone"}
       >
         {isMicOn ? <Mic size={20} /> : <MicOff size={20} />}
       </button>

@@ -162,7 +162,7 @@ export default function Player() {
             />
           </div>
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-zinc-500 flex-col gap-4">
+          <div className="absolute inset-0 flex items-center justify-center text-zinc-400 flex-col gap-4">
             <PlaySquare className="w-16 h-16 opacity-20" />
             <p>No video playing</p>
           </div>

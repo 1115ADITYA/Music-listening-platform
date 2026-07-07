@@ -53,7 +53,7 @@ export default function Chat() {
                 <span className="text-xs font-semibold" style={{ color: msg.color }}>
                   {msg.username}
                 </span>
-                <span className="text-[10px] text-zinc-600">
+                <span className="text-[10px] text-zinc-400">
                   {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
@@ -79,6 +79,7 @@ export default function Chat() {
             type="submit"
             disabled={!input.trim()}
             className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:hover:bg-purple-600 rounded-lg transition-colors"
+            aria-label="Send message"
           >
             <Send className="w-4 h-4 text-white" />
           </button>

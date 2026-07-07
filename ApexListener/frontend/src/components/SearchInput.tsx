@@ -74,7 +74,7 @@ export default function SearchInput({ onSelect, placeholder = "Search or paste Y
             {isSearching ? (
               <Loader2 className="w-5 h-5 text-purple-500 animate-spin" />
             ) : (
-              <Search className="w-5 h-5 text-zinc-400" />
+              <Search className="w-5 h-5 text-zinc-300" />
             )}
           </div>
           <input
@@ -125,7 +125,7 @@ export default function SearchInput({ onSelect, placeholder = "Search or paste Y
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-medium text-white truncate">{video.title}</h4>
+                  <p className="text-sm font-medium text-white truncate">{video.title}</p>
                 </div>
               </div>
             ))}

@@ -53,7 +53,7 @@ export default function UserList() {
                         className="bg-zinc-900 border border-purple-500/50 rounded-lg px-2 py-1 text-sm text-white w-full focus:outline-none"
                         autoFocus
                       />
-                      <button onClick={handleSaveName} className="text-green-400 hover:text-green-300">
+                      <button onClick={handleSaveName} className="text-green-400 hover:text-green-300" aria-label="Save name">
                         <Check className="w-4 h-4" />
                       </button>
                     </div>
@@ -68,7 +68,8 @@ export default function UserList() {
                             setEditName(user.username);
                             setIsEditing(true);
                           }}
-                          className="text-zinc-500 hover:text-white transition-colors"
+                          className="text-zinc-400 hover:text-white transition-colors"
+                          aria-label="Edit name"
                         >
                           <Pencil className="w-3 h-3" />
                         </button>
@@ -77,7 +78,7 @@ export default function UserList() {
                   )}
                   
                   {isMe && !isEditing && (
-                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-white/10 rounded-full text-zinc-400">
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-white/10 rounded-full text-zinc-300">
                       You
                     </span>
                   )}
@@ -87,7 +88,7 @@ export default function UserList() {
                       <Mic className="w-3 h-3" />
                     </div>
                   ) : (
-                    <div className="w-6 h-6 flex items-center justify-center bg-zinc-800/50 text-zinc-500 rounded-full ml-auto" title="Mic Off">
+                    <div className="w-6 h-6 flex items-center justify-center bg-zinc-800/50 text-zinc-400 rounded-full ml-auto" title="Mic Off">
                       <MicOff className="w-3 h-3" />
                     </div>
                   )}

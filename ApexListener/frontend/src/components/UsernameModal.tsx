@@ -44,7 +44,7 @@ export default function UsernameModal({ isOpen, onSave }: UsernameModalProps) {
                 <User className="w-8 h-8 text-purple-400" />
               </div>
               <h2 className="text-2xl font-bold text-white tracking-tight">What's your name?</h2>
-              <p className="text-zinc-400 text-sm">Enter a nickname so your friends know who you are!</p>
+              <p className="text-zinc-300 text-sm">Enter a nickname so your friends know who you are!</p>
             </div>
 
             <form onSubmit={handleSubmit} className="relative flex flex-col gap-4">
