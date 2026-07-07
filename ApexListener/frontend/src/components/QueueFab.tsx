@@ -57,7 +57,7 @@ export default function QueueFab() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-14 h-14 bg-purple-600 hover:bg-purple-500 text-white rounded-full shadow-lg shadow-purple-500/30 flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
-        aria-label={isOpen ? "Close queue" : "Open queue"}
+        aria-label="Toggle queue"
       >
         {isOpen ? <X className="w-6 h-6" /> : <ListMusic className="w-6 h-6" />}
       </button>
