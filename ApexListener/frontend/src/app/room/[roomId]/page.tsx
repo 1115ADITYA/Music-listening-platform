@@ -5,7 +5,7 @@ import { useSocket } from '@/components/SocketProvider';
 import { useStore } from '@/store/useStore';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Copy, Link, Users, MessageSquare, PlaySquare, ArrowLeft } from 'lucide-react';
+import { Copy, Link, Users, MessageSquare, PlaySquare, ArrowLeft, Coffee } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Player from '@/components/Player';
 import Chat from '@/components/Chat';
@@ -81,6 +81,15 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
         </div>
 
         <div className="flex items-center gap-4">
+          <a 
+            href="https://ko-fi.com/aditya69939" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 rounded-xl transition-colors text-xs font-medium border border-pink-500/20"
+          >
+            <Coffee className="w-3.5 h-3.5" />
+            Support me
+          </a>
           {isController && (
             <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900/50 rounded-xl border border-white/5 mr-2">
               <span className="text-xs font-medium text-zinc-300">Anyone can play:</span>

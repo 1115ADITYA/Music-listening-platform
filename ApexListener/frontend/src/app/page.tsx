@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Play, Users, Zap, ArrowRight, Loader2 } from 'lucide-react';
+import { Play, Users, Zap, ArrowRight, Loader2, Coffee } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 export default function LandingPage() {
@@ -57,9 +57,18 @@ export default function LandingPage() {
           </div>
           <span className="font-bold text-xl tracking-tight">ApexListener</span>
         </div>
-        <div className="flex gap-6 text-sm font-medium text-zinc-300">
+        <div className="flex gap-6 items-center text-sm font-medium text-zinc-300">
           <a href="#features" className="hover:text-white transition-colors">Features</a>
           <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
+          <a 
+            href="https://ko-fi.com/aditya69939" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="flex items-center gap-2 px-3 py-1.5 bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 rounded-xl transition-colors border border-pink-500/20"
+          >
+            <Coffee className="w-4 h-4" />
+            Support me
+          </a>
         </div>
       </nav>
 
