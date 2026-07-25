@@ -24,7 +24,11 @@
 /* ─────────────────────────────────────────
    RESET / BASE
 ───────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* In @layer base so component classes below can still set their own padding —
+   an unlayered `* { padding: 0 }` outranks anything declared in a layer. */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+}
 
 /* Wide content container to fill horizontal space nicely */
 .page-container {
@@ -358,7 +362,7 @@ body {
 .anim-4 { opacity: 0; animation: fadeInUp 0.55s ease-out 0.34s forwards; }
 
 /* ─────────────────────────────────────────
-   QUEUE LIST
+   QUEUE LIST (LANDING MOCKUP)
 ───────────────────────────────────────── */
 .queue-row {
   display: flex;
@@ -380,3 +384,415 @@ body {
   border-radius: 3px;
   flex-shrink: 0;
 }
+
+/* ═════════════════════════════════════════
+   ROOM
+   Same tokens, radii and rhythm as the landing page.
+
+   Declared in @layer components so Tailwind utilities still win — several
+   of these set `display`, and responsive helpers like `hidden lg:inline-flex`
+   must be able to override them.
+═════════════════════════════════════════ */
+@layer components {
+
+/* Same horizontal gutter as .page-container, so the room header's back
+   button and logo land on the exact same x as the landing navbar's logo. */
+.room-gutter {
+  padding-left: clamp(24px, 3vw, 48px);
+  padding-right: clamp(24px, 3vw, 48px);
+}
+
+/* ── HEADER ─────────────────────────────── */
+.room-header {
+  height: 72px;                /* identical to the landing navbar */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-shrink: 0;
+  background: rgba(8,13,8,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Square 36px icon button — used for back arrow, copy, etc. */
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.icon-btn:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--border-card);
+  color: var(--text-primary);
+}
+
+/* Room code chip */
+.room-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.room-code:hover { color: var(--text-primary); }
+
+/* Pills in the header right cluster — all share one height for alignment */
+.room-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--accent-teal);
+}
+.status-dot.offline {
+  background: var(--accent-orange);
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+/* Permission toggle */
+.perm-switch {
+  width: 34px;
+  height: 18px;
+  border-radius: 100px;
+  position: relative;
+  border: none;
+  cursor: pointer;
+  background: rgba(255,255,255,0.14);
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.perm-switch.on { background: var(--accent-orange); }
+.perm-switch .knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+.perm-switch.on .knob { transform: translateX(16px); }
+
+/* Mic button — same 36px rhythm as the pills */
+.mic-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.mic-btn:hover { background: rgba(255,255,255,0.09); color: var(--text-primary); }
+.mic-btn.on {
+  background: rgba(45,212,191,0.12);
+  border-color: rgba(45,212,191,0.35);
+  color: var(--accent-teal);
+}
+.mic-btn.on:hover { background: rgba(45,212,191,0.2); color: var(--accent-teal); }
+
+/* Compact orange CTA — the landing .btn-primary at header scale */
+.btn-primary-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 18px;
+  background: var(--accent-orange);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.82rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary-sm:hover:not(:disabled) { background: #e6432a; transform: translateY(-1px); }
+.btn-primary-sm:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+/* Header variant of .btn-support, matched to the 36px row */
+.btn-support-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  background: transparent;
+  color: var(--accent-gold);
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid rgba(240,180,41,0.3);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-support-sm:hover { background: rgba(240,180,41,0.08); border-color: rgba(240,180,41,0.5); }
+
+/* ── SIDEBAR ────────────────────────────── */
+.room-sidebar {
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-subtle);
+}
+@media (max-width: 1023px) {
+  .room-sidebar {
+    border-left: none;
+    border-top: 1px solid var(--border-subtle);
+  }
+}
+
+.room-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+.room-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 38px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.room-tab:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+.room-tab.active {
+  background: rgba(255,77,45,0.1);
+  border-color: rgba(255,77,45,0.3);
+  color: var(--accent-orange);
+}
+
+/* Sticky area above a scrolling panel (queue search bar, chat composer) */
+.panel-bar {
+  padding: 14px;
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+.panel-bar.top    { border-bottom: 1px solid var(--border-subtle); }
+.panel-bar.bottom { border-top: 1px solid var(--border-subtle); }
+
+.panel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ── CHAT ───────────────────────────────── */
+.chat-bubble {
+  width: fit-content;
+  max-width: 100%;
+  padding: 9px 13px;
+  border-radius: 10px;
+  border-top-left-radius: 3px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  word-break: break-word;
+}
+.chat-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.68rem;
+}
+
+/* ── FIELDS ─────────────────────────────── */
+.field {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-card);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.field::placeholder { color: var(--text-muted); }
+.field:focus { border-color: rgba(45,212,191,0.4); }
+
+/* Inline round submit button parked inside a .field */
+.field-submit {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  border: none;
+  background: var(--accent-orange);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+.field-submit:hover:not(:disabled) { background: #e6432a; }
+.field-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── SEARCH DROPDOWN ────────────────────── */
+.search-dropdown {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+}
+.search-result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.15s;
+}
+.search-result:last-child { border-bottom: none; }
+.search-result:hover { background: rgba(255,77,45,0.07); }
+
+/* ── LIST ROWS (queue + users) ──────────── */
+.room-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.room-row:hover { border-color: var(--border-card); background: rgba(20,31,20,0.95); }
+
+.row-action {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,77,45,0.14);
+  color: var(--accent-orange);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.row-action:hover { background: var(--accent-orange); color: #fff; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.07);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ── VIDEO STAGE ────────────────────────── */
+.video-stage {
+  position: relative;
+  width: 100%;
+  background: #000;
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── MODAL ──────────────────────────────── */
+.modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(160deg, rgba(20,31,20,0.98) 0%, rgba(13,26,13,0.99) 100%);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  padding: 32px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+}
+
+/* ── FAB ────────────────────────────────── */
+.fab {
+  width: 52px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent-orange);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(255,77,45,0.3);
+  transition: background 0.2s, transform 0.15s;
+}
+.fab:hover { background: #e6432a; transform: scale(1.04); }
+.fab:active { transform: scale(0.96); }
+
+} /* @layer components */

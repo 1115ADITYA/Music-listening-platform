@@ -35,11 +35,11 @@ export default function Queue() {
   return (
     <div className="flex flex-col h-full absolute inset-0">
       {canControl && (
-        <div className="p-4 border-b border-white/5 bg-zinc-900/50 shrink-0 flex">
+        <div className="panel-bar top flex">
           <SearchInput
             placeholder="Search or paste URL to queue..."
             buttonLabel="Add"
-            buttonIcon={<Plus className="w-4 h-4 text-white" />}
+            buttonIcon={<Plus className="w-4 h-4" />}
             onSelect={(videoId, title) => {
               socket?.emit('add_to_queue', {
                 id: Math.random().toString(36).substr(2, 9),
@@ -52,47 +52,61 @@ export default function Queue() {
       )}
 
       {localQueue.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-full text-zinc-400 gap-2 p-4">
-          <Clock className="w-8 h-8 opacity-20" />
-          <p className="text-sm">Queue is empty</p>
+        <div className="panel-empty">
+          <Clock className="w-7 h-7 opacity-25" />
+          <p>Queue is empty</p>
         </div>
       ) : (
-        <Reorder.Group 
-          axis="y" 
-          values={localQueue} 
-          onReorder={handleReorder} 
-          className="flex-1 overflow-y-auto p-4 space-y-2"
+        <Reorder.Group
+          axis="y"
+          values={localQueue}
+          onReorder={handleReorder}
+          className="flex-1 overflow-y-auto p-3.5 space-y-2"
         >
-          {localQueue.map((item) => (
+          {localQueue.map((item, index) => (
             <Reorder.Item
               key={item.id}
               value={item}
-              className="flex items-center gap-3 p-3 bg-zinc-900 rounded-xl border border-white/5 group hover:bg-zinc-800 transition-colors relative"
+              className="room-row group relative"
             >
-              {canControl && (
-                <div className="cursor-grab active:cursor-grabbing text-zinc-400 hover:text-zinc-300">
+              {canControl ? (
+                <div
+                  className="cursor-grab active:cursor-grabbing shrink-0"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   <GripVertical className="w-4 h-4" />
                 </div>
+              ) : (
+                <span
+                  className="text-[0.7rem] font-semibold shrink-0 w-4 text-center"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  {index + 1}
+                </span>
               )}
-              
-              <div className="w-16 h-10 bg-black rounded overflow-hidden shrink-0 relative pointer-events-none">
+
+              <div className="w-14 h-9 bg-black rounded-md overflow-hidden shrink-0 relative pointer-events-none">
                 <img
                   src={`https://img.youtube.com/vi/${item.videoId}/default.jpg`}
                   alt="thumbnail"
-                  className="w-full h-full object-cover opacity-80"
+                  className="w-full h-full object-cover opacity-85"
                 />
               </div>
               <div className="flex-1 min-w-0 pointer-events-none">
-                <p className="text-sm font-medium text-zinc-200 truncate">{item.title}</p>
-                <p className="text-[10px] text-zinc-400 truncate">{item.videoId}</p>
+                <p className="text-[0.82rem] font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+                  {item.title}
+                </p>
+                <p className="text-[0.65rem] truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                  {item.videoId}
+                </p>
               </div>
               {canControl && (
                 <button
                   onClick={() => playNow(item.id)}
-                  className="w-8 h-8 shrink-0 rounded-full bg-purple-600/20 hover:bg-purple-500 text-purple-400 hover:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                  className="row-action opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
                   aria-label="Play now"
                 >
-                  <Play className="w-4 h-4 ml-0.5" />
+                  <Play className="w-3.5 h-3.5 ml-0.5" />
                 </button>
               )}
             </Reorder.Item>

@@ -124,13 +124,13 @@ export default function Player() {
   };
 
   return (
-    <div className="flex flex-col gap-6 w-full h-full max-w-5xl mx-auto">
+    <div className="flex flex-col gap-4 w-full h-full max-w-5xl mx-auto">
       {/* Controller Toolbar */}
       {canControl && (
-        <div className="w-full flex">
-          <SearchInput 
+        <div className="w-full flex shrink-0">
+          <SearchInput
             buttonLabel="Load Video"
-            onSelect={(id, title) => {
+            onSelect={(id) => {
               setIsLoadingVideo(true);
               socket?.emit('sync_video', { videoId: id, isPlaying: true, timestamp: 0 });
             }}
@@ -139,13 +139,15 @@ export default function Player() {
       )}
 
       {/* Video Container */}
-      <div className="w-full flex-1 min-h-[300px] aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/5 relative group">
+      <div className="video-stage w-full flex-1 min-h-[300px] aspect-video group">
         {videoState.videoId ? (
           <div className="absolute inset-0 pointer-events-auto">
             {isLoadingVideo && (
-              <div className="absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center pointer-events-none transition-opacity duration-500">
-                <Loader2 className="w-12 h-12 text-purple-500 animate-spin mb-4" />
-                <p className="text-purple-400 font-medium animate-pulse">Syncing Video...</p>
+              <div className="absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 pointer-events-none transition-opacity duration-500">
+                <Loader2 className="w-9 h-9 animate-spin" style={{ color: 'var(--accent-orange)' }} />
+                <p className="text-sm font-medium tracking-wide" style={{ color: 'var(--text-secondary)' }}>
+                  Syncing video…
+                </p>
               </div>
             )}
             {!canControl && <div className="absolute inset-0 z-10" onClick={(e) => {
@@ -162,9 +164,14 @@ export default function Player() {
             />
           </div>
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-zinc-400 flex-col gap-4">
-            <PlaySquare className="w-16 h-16 opacity-20" />
-            <p>No video playing</p>
+          <div className="absolute inset-0 flex items-center justify-center flex-col gap-3">
+            <PlaySquare className="w-12 h-12 opacity-20" style={{ color: 'var(--text-secondary)' }} />
+            <p className="heading-font text-2xl" style={{ color: 'var(--text-secondary)' }}>
+              No video playing
+            </p>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              {canControl ? 'Search above or paste a YouTube link to start' : 'Waiting for the host to start a video'}
+            </p>
           </div>
         )}
       </div>

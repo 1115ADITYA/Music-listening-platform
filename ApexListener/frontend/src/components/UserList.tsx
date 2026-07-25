@@ -21,7 +21,7 @@ export default function UserList() {
   };
 
   return (
-    <div className="absolute inset-0 p-4 overflow-y-auto">
+    <div className="absolute inset-0 p-3.5 overflow-y-auto">
       <div className="space-y-2">
         <AnimatePresence>
           {users.map((user) => {
@@ -34,41 +34,48 @@ export default function UserList() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-xl border border-white/5"
+                className="room-row"
               >
-                <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg"
-                  style={{ backgroundColor: `${user.color}40`, color: user.color, border: `2px solid ${user.color}` }}
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-base shrink-0 uppercase"
+                  style={{ backgroundColor: `${user.color}33`, color: user.color, border: `2px solid ${user.color}` }}
                 >
                   {user.username.charAt(0)}
                 </div>
-                <div className="flex-1 flex items-center gap-2">
+                <div className="flex-1 flex items-center gap-2 min-w-0">
                   {isMe && isEditing ? (
                     <div className="flex items-center gap-2 w-full">
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
-                        className="bg-zinc-900 border border-purple-500/50 rounded-lg px-2 py-1 text-sm text-white w-full focus:outline-none"
+                        className="field"
+                        style={{ padding: '5px 10px', fontSize: '0.8rem' }}
                         autoFocus
                       />
-                      <button onClick={handleSaveName} className="text-green-400 hover:text-green-300" aria-label="Save name">
+                      <button
+                        onClick={handleSaveName}
+                        className="shrink-0"
+                        style={{ color: 'var(--accent-teal)' }}
+                        aria-label="Save name"
+                      >
                         <Check className="w-4 h-4" />
                       </button>
                     </div>
                   ) : (
                     <>
-                      <span className="font-medium text-sm">
+                      <span className="font-medium text-[0.82rem] truncate" style={{ color: 'var(--text-primary)' }}>
                         {user.username}
                       </span>
                       {isMe && (
-                        <button 
+                        <button
                           onClick={() => {
                             setEditName(user.username);
                             setIsEditing(true);
                           }}
-                          className="text-zinc-400 hover:text-white transition-colors"
+                          className="shrink-0 transition-colors"
+                          style={{ color: 'var(--text-muted)' }}
                           aria-label="Edit name"
                         >
                           <Pencil className="w-3 h-3" />
@@ -76,27 +83,35 @@ export default function UserList() {
                       )}
                     </>
                   )}
-                  
-                  {isMe && !isEditing && (
-                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-white/10 rounded-full text-zinc-300">
-                      You
-                    </span>
-                  )}
-                  
+
+                  {isMe && !isEditing && <span className="tag shrink-0">You</span>}
+
                   {user.micOn ? (
-                    <div className="w-6 h-6 flex items-center justify-center bg-green-500/20 text-green-500 rounded-full ml-auto" title="Mic On">
+                    <div
+                      className="w-6 h-6 flex items-center justify-center rounded-full ml-auto shrink-0"
+                      style={{ background: 'rgba(45,212,191,0.14)', color: 'var(--accent-teal)' }}
+                      title="Mic On"
+                    >
                       <Mic className="w-3 h-3" />
                     </div>
                   ) : (
-                    <div className="w-6 h-6 flex items-center justify-center bg-zinc-800/50 text-zinc-400 rounded-full ml-auto" title="Mic Off">
+                    <div
+                      className="w-6 h-6 flex items-center justify-center rounded-full ml-auto shrink-0"
+                      style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}
+                      title="Mic Off"
+                    >
                       <MicOff className="w-3 h-3" />
                     </div>
                   )}
                 </div>
 
                 {isController && (
-                  <div className="w-8 h-8 flex items-center justify-center bg-yellow-500/20 text-yellow-500 rounded-full" title="Room Host">
-                    <Crown className="w-4 h-4" />
+                  <div
+                    className="w-7 h-7 flex items-center justify-center rounded-full shrink-0"
+                    style={{ background: 'rgba(240,180,41,0.14)', color: 'var(--accent-gold)' }}
+                    title="Room Host"
+                  >
+                    <Crown className="w-3.5 h-3.5" />
                   </div>
                 )}
               </motion.div>

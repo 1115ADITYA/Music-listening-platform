@@ -9,15 +9,12 @@ export const MicToggle = () => {
     <>
       <button
         onClick={toggleMic}
-        className={`p-3 rounded-full transition-all shadow-lg flex items-center justify-center ${
-          isMicOn 
-            ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' 
-            : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80'
-        }`}
+        className={`mic-btn ${isMicOn ? 'on' : ''}`}
         title={isMicOn ? "Turn off microphone" : "Turn on microphone"}
         aria-label="Toggle microphone"
+        aria-pressed={isMicOn}
       >
-        {isMicOn ? <Mic size={20} /> : <MicOff size={20} />}
+        {isMicOn ? <Mic size={16} /> : <MicOff size={16} />}
       </button>
 
       {/* Render invisible audio elements for incoming streams */}

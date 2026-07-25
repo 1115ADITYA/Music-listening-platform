@@ -68,13 +68,13 @@ export default function SearchInput({ onSelect, placeholder = "Search or paste Y
 
   return (
     <div className="relative flex-1 w-full" ref={containerRef}>
-      <form onSubmit={handleSearch} className="flex gap-2 w-full">
-        <div className="relative flex-1">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+      <form onSubmit={handleSearch} className="flex gap-2 w-full items-stretch">
+        <div className="relative flex-1 min-w-0">
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
             {isSearching ? (
-              <Loader2 className="w-5 h-5 text-purple-500 animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--accent-orange)' }} />
             ) : (
-              <Search className="w-5 h-5 text-zinc-300" />
+              <Search className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
             )}
           </div>
           <input
@@ -85,14 +85,16 @@ export default function SearchInput({ onSelect, placeholder = "Search or paste Y
             onFocus={() => {
               if (results.length > 0) setIsOpen(true);
             }}
-            className="w-full pl-12 pr-4 py-4 bg-zinc-900/50 border border-white/10 rounded-2xl focus:outline-none focus:border-purple-500/50 shadow-2xl text-base text-white"
+            className="field"
+            style={{ height: 42, paddingLeft: 40, paddingRight: 14 }}
           />
         </div>
         {buttonLabel && (
           <button
             type="submit"
             disabled={!query.trim()}
-            className="px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-2xl transition-colors shadow-lg shadow-purple-500/20 disabled:opacity-50 flex items-center gap-2 shrink-0"
+            className="btn-primary-sm shrink-0"
+            style={{ height: 42 }}
           >
             {buttonIcon}
             {buttonLabel}
@@ -106,7 +108,7 @@ export default function SearchInput({ onSelect, placeholder = "Search or paste Y
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 max-h-[400px] overflow-y-auto"
+            className="search-dropdown absolute top-full left-0 right-0 mt-2 z-50 max-h-[360px] overflow-y-auto"
           >
             {results.map((video) => (
               <div
@@ -116,16 +118,18 @@ export default function SearchInput({ onSelect, placeholder = "Search or paste Y
                   setIsOpen(false);
                   setQuery('');
                 }}
-                className="flex items-center gap-4 p-3 hover:bg-white/5 cursor-pointer transition-colors border-b border-white/5 last:border-0"
+                className="search-result"
               >
-                <div className="relative w-24 h-16 rounded-lg overflow-hidden shrink-0 bg-black">
-                  <img src={video.thumbnail} alt={video.title} className="object-cover w-full h-full opacity-80" />
+                <div className="relative w-20 h-[46px] rounded-md overflow-hidden shrink-0 bg-black">
+                  <img src={video.thumbnail} alt={video.title} className="object-cover w-full h-full opacity-85" />
                   <span className="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">
                     {video.duration}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{video.title}</p>
+                  <p className="text-[0.82rem] font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+                    {video.title}
+                  </p>
                 </div>
               </div>
             ))}
