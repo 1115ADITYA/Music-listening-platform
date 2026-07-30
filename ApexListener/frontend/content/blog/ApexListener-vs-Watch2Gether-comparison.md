@@ -1,5 +1,5 @@
 ---
-title: "Welcome to ApexListener: Next-Gen Synchronized YouTube Watching"
+title: "ApexListener-vs-Watch2Gether-comparison"
 description: "Discover how ApexListener delivers sub-second, frame-perfect synchronized video playback with your friends without any logins or setup hassle."
 date: "2026-07-30"
 author: "ApexListener Team"
