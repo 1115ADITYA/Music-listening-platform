@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Play, ArrowRight, Loader2, Coffee, Zap, Users, ListMusic, Plus, Minus } from 'lucide-react';
+import { Play, ArrowRight, Loader2, Zap, Users, ListMusic, Plus, Minus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { Navbar } from '@/components/Navbar';
 import { LogoIcon } from '@/components/LogoIcon';
 
 /* ─────────────────────────────────────────
@@ -27,45 +28,6 @@ const faqs = [
     a: 'ApexListener syncs at the frame level, not just the timestamp. Nobody falls behind on a slow connection — we lock everyone to the same frame and resync automatically.',
   },
 ];
-
-/* ─────────────────────────────────────────
-   SUB-COMPONENTS
-───────────────────────────────────────── */
-function NavBar() {
-  return (
-    <nav className="nav-glass sticky top-0 z-50">
-      <div className="page-container h-[72px] flex justify-between items-center">
-        {/* Logo */}
-        <div className="flex items-center gap-3">
-          <LogoIcon className="h-8 w-auto" />
-          <span className="font-bold text-lg sm:text-xl tracking-tight" style={{ color: 'var(--text-primary)' }}>
-            ApexListener
-          </span>
-        </div>
-
-        {/* Links */}
-        <div className="hidden md:flex items-center gap-9 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-          <a href="#how-it-works" className="hover:text-white transition-colors">How it works</a>
-          <a href="#features"     className="hover:text-white transition-colors">Features</a>
-          <a href="#faq"          className="hover:text-white transition-colors">FAQ</a>
-        </div>
-
-        {/* Support button */}
-        <div className="flex items-center">
-          <a
-            href="https://ko-fi.com/aditya69939"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-support"
-          >
-            <Coffee className="w-3.5 h-3.5" />
-            Support me
-          </a>
-        </div>
-      </div>
-    </nav>
-  );
-}
 
 function BrowserMockup() {
   return (
@@ -378,7 +340,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
-      <NavBar />
+      <Navbar />
 
       {/* ── HERO ───────────────────────────────── */}
       <main className="flex-1">

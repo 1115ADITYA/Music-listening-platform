@@ -795,4 +795,92 @@ body {
 .fab:hover { background: #e6432a; transform: scale(1.04); }
 .fab:active { transform: scale(0.96); }
 
+/* ── PROSE / MARKDOWN BLOG CONTENT STYLING ── */
+.prose-apex {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+.prose-apex h1,
+.prose-apex h2,
+.prose-apex h3,
+.prose-apex h4 {
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.prose-apex h1 { font-size: 2.25rem; margin-top: 2rem; margin-bottom: 1rem; }
+.prose-apex h2 { font-size: 1.75rem; margin-top: 2.25rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-card); padding-bottom: 0.5rem; }
+.prose-apex h3 { font-size: 1.4rem; margin-top: 1.75rem; margin-bottom: 0.75rem; }
+.prose-apex h4 { font-size: 1.15rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+
+.prose-apex p {
+  margin-bottom: 1.25rem;
+}
+.prose-apex strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.prose-apex a {
+  color: var(--accent-teal);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color 0.2s;
+}
+.prose-apex a:hover {
+  color: #fff;
+}
+.prose-apex blockquote {
+  border-left: 4px solid var(--accent-orange);
+  background: var(--bg-surface);
+  padding: 1rem 1.25rem;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  margin: 1.5rem 0;
+  color: var(--text-primary);
+  font-style: italic;
+}
+.prose-apex ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.prose-apex ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.prose-apex li {
+  margin-bottom: 0.5rem;
+}
+.prose-apex code {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--accent-teal);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+.prose-apex pre {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  padding: 1.25rem;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+.prose-apex pre code {
+  background: transparent;
+  padding: 0;
+  color: var(--text-primary);
+}
+.prose-apex hr {
+  border: none;
+  border-top: 1px solid var(--border-card);
+  margin: 2.5rem 0;
+}
+
 } /* @layer components */
