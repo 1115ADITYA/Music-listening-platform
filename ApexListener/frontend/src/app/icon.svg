@@ -1,0 +1,10 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background badge -->
+  <circle cx="50" cy="50" r="48" fill="#090e0a" />
+  <!-- ApexListener overlapping circles -->
+  <circle cx="26" cy="50" r="20" fill="#1ad1b9" />
+  <circle cx="48" cy="50" r="20" fill="#f5b72b" />
+  <circle cx="70" cy="50" r="20" fill="#ff5c7c" />
+  <!-- Center play triangle -->
+  <polygon points="43,41 59,50 43,59" fill="#080d08" />
+</svg>
