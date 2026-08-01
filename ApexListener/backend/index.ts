@@ -78,6 +78,9 @@ app.post('/contact', async (req, res) => {
       port: smtpPort,
       secure: smtpPort === 465,
       auth: { user: smtpUser, pass: smtpPass },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
 
     const safeEmail = escapeHtml(email);

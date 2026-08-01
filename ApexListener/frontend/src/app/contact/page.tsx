@@ -18,12 +18,17 @@ export default function ContactPage() {
     setStatus('sending');
     setMessage('');
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
       const response = await fetch(`${backendUrl}/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, issue }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       const result = await response.json();
 
       if (!response.ok) throw new Error(result.error || 'Unable to send your message.');
@@ -33,8 +38,13 @@ export default function ContactPage() {
       setEmail('');
       setIssue('');
     } catch (error) {
+      clearTimeout(timeoutId);
       setStatus('error');
-      setMessage(error instanceof Error ? error.message : 'Unable to send your message.');
+      if (error instanceof Error && error.name === 'AbortError') {
+        setMessage('Server request timed out. Please check if the backend server is running and try again.');
+      } else {
+        setMessage(error instanceof Error ? error.message : 'Unable to send your message. Please check if the backend is running.');
+      }
     }
   };
 
