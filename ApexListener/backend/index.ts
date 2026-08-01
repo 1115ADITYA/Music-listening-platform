@@ -29,6 +29,14 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '16kb' }));
 
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'ok', service: 'ApexListener Backend API', timestamp: new Date().toISOString() });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 const contactAttempts = new Map<string, { count: number; resetAt: number }>();
 const CONTACT_WINDOW_MS = 60 * 60 * 1000;
 const CONTACT_MAX_ATTEMPTS = 5;
