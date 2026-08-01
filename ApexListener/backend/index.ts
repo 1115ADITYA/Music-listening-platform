@@ -65,20 +65,59 @@ app.post('/contact', async (req, res) => {
     resetAt: attempt && attempt.resetAt > now ? attempt.resetAt : now + CONTACT_WINDOW_MS,
   });
 
+  const resendApiKey = process.env.RESEND_API_KEY?.trim();
   const smtpHost = (process.env.SMTP_HOST || 'smtp.gmail.com').trim();
-  const smtpPort = Number(process.env.SMTP_PORT || 465);
+  const smtpPort = Number(process.env.SMTP_PORT || 587);
   const smtpUser = process.env.SMTP_USER?.trim();
   // Strip any spaces that might be pasted in 16-character Google App Passwords
   const smtpPass = process.env.SMTP_PASS?.replace(/\s+/g, '');
-  const contactRecipient = process.env.CONTACT_TO_EMAIL?.trim();
+  const contactRecipient = process.env.CONTACT_TO_EMAIL?.trim() || 'adi011507@gmail.com';
   const fromAddress = process.env.CONTACT_FROM_EMAIL?.trim() || smtpUser;
 
-  if (!smtpUser || !smtpPass || !contactRecipient || !fromAddress) {
-    console.error('Contact email is not configured. Set SMTP_USER, SMTP_PASS, and CONTACT_TO_EMAIL.');
-    res.status(503).json({ error: 'The contact form is temporarily unavailable. Please set SMTP_USER, SMTP_PASS, and CONTACT_TO_EMAIL.' });
+  if (!resendApiKey && (!smtpUser || !smtpPass)) {
+    console.error('Contact email is not configured. Set RESEND_API_KEY or (SMTP_USER, SMTP_PASS).');
+    res.status(503).json({ error: 'The contact form is temporarily unavailable. Set RESEND_API_KEY or SMTP credentials.' });
     return;
   }
 
+  const safeEmail = escapeHtml(email);
+  const safeIssue = escapeHtml(issue).replace(/\n/g, '<br />');
+
+  // Option 1: Send via Resend HTTPS API (Port 443 - 100% bypasses Render SMTP port blocks)
+  if (resendApiKey) {
+    try {
+      const resendRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: process.env.CONTACT_FROM_EMAIL?.trim() || 'ApexListener Contact <onboarding@resend.dev>',
+          to: [contactRecipient],
+          reply_to: email,
+          subject: `ApexListener contact request from ${email}`,
+          html: `<h2>New ApexListener contact request</h2><p><strong>Reply-to email:</strong> ${safeEmail}</p><p><strong>Issue:</strong></p><p>${safeIssue}</p>`,
+        }),
+      });
+
+      const resendData: any = await resendRes.json();
+      if (!resendRes.ok) {
+        throw new Error(resendData?.message || resendData?.error?.message || 'Resend HTTP API failed');
+      }
+
+      res.status(200).json({ message: 'Your message has been sent.' });
+      return;
+    } catch (resendErr: any) {
+      console.error('Resend API error:', resendErr);
+      if (!smtpUser || !smtpPass) {
+        res.status(502).json({ error: `Email delivery error: ${resendErr?.message || 'Resend error'}` });
+        return;
+      }
+    }
+  }
+
+  // Option 2: Nodemailer SMTP
   try {
     const ipv4Lookup = (hostname: string, options: any, callback: any) => {
       const cb = typeof options === 'function' ? options : callback;
@@ -111,8 +150,6 @@ app.post('/contact', async (req, res) => {
           } as any
     );
 
-    const safeEmail = escapeHtml(email);
-    const safeIssue = escapeHtml(issue).replace(/\n/g, '<br />');
     await transporter.sendMail({
       from: `ApexListener Contact <${fromAddress}>`,
       to: contactRecipient,
@@ -123,7 +160,7 @@ app.post('/contact', async (req, res) => {
     });
     res.status(200).json({ message: 'Your message has been sent.' });
   } catch (error: any) {
-    console.error('Unable to send contact email:', error);
+    console.error('Unable to send contact email via SMTP:', error);
     const errMessage = String(error?.message || '');
     const isAuthError = error?.code === 'EAUTH' || errMessage.includes('535') || errMessage.includes('Username and Password not accepted');
     
