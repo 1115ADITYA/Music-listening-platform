@@ -80,6 +80,12 @@ app.post('/contact', async (req, res) => {
   }
 
   try {
+    const ipv4Lookup = (hostname: string, options: any, callback: any) => {
+      const cb = typeof options === 'function' ? options : callback;
+      const opts = typeof options === 'object' && options !== null ? { ...options, family: 4 } : { family: 4 };
+      dns.lookup(hostname, opts, cb);
+    };
+
     const isGmail = smtpHost.includes('gmail') || process.env.SMTP_SERVICE === 'gmail';
     const transporter = nodemailer.createTransport(
       isGmail
@@ -88,7 +94,7 @@ app.post('/contact', async (req, res) => {
             port: 587,
             secure: false, // TLS / STARTTLS
             auth: { user: smtpUser, pass: smtpPass },
-            family: 4, // Force IPv4 to prevent ENETUNREACH on IPv6 addresses
+            lookup: ipv4Lookup,
             connectionTimeout: 10000,
             greetingTimeout: 10000,
             socketTimeout: 10000,
@@ -98,7 +104,7 @@ app.post('/contact', async (req, res) => {
             port: smtpPort,
             secure: smtpPort === 465,
             auth: { user: smtpUser, pass: smtpPass },
-            family: 4, // Force IPv4 to prevent ENETUNREACH on IPv6 addresses
+            lookup: ipv4Lookup,
             connectionTimeout: 10000,
             greetingTimeout: 10000,
             socketTimeout: 10000,
