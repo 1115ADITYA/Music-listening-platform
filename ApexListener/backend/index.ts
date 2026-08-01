@@ -94,6 +94,11 @@ app.post('/contact', async (req, res) => {
   // Option 1: Send via Resend HTTPS API (Port 443 - 100% bypasses Render SMTP port blocks)
   if (resendApiKey) {
     try {
+      const configuredFrom = process.env.CONTACT_FROM_EMAIL?.trim();
+      const resendFrom = (!configuredFrom || /@(gmail|yahoo|outlook|hotmail)\.com$/i.test(configuredFrom))
+        ? 'ApexListener Contact <onboarding@resend.dev>'
+        : configuredFrom;
+
       const resendRes = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -101,7 +106,7 @@ app.post('/contact', async (req, res) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: process.env.CONTACT_FROM_EMAIL?.trim() || 'ApexListener Contact <onboarding@resend.dev>',
+          from: resendFrom,
           to: [contactRecipient],
           reply_to: email,
           subject: `ApexListener contact request from ${email}`,
