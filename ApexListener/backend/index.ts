@@ -3,9 +3,99 @@ import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import ytSearch from 'yt-search';
 import cors from 'cors';
+import nodemailer from 'nodemailer';
+import { existsSync, readFileSync } from 'fs';
+import { resolve } from 'path';
+
+// Load local configuration without committing it. Hosted deployments should set
+// the same values through their provider's environment-variable settings.
+const envPath = resolve(process.cwd(), '.env');
+if (existsSync(envPath)) {
+  for (const line of readFileSync(envPath, 'utf8').split(/\r?\n/)) {
+    const match = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/);
+    if (!match || process.env[match[1]] !== undefined) continue;
+    const [, key, rawValue] = match;
+    process.env[key] = rawValue.replace(/^(['"])(.*)\1$/, '$2');
+  }
+}
 
 const app = express();
 app.use(cors());
+app.use(express.json({ limit: '16kb' }));
+
+const contactAttempts = new Map<string, { count: number; resetAt: number }>();
+const CONTACT_WINDOW_MS = 60 * 60 * 1000;
+const CONTACT_MAX_ATTEMPTS = 5;
+
+const escapeHtml = (value: string) => value
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
+
+app.post('/contact', async (req, res) => {
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const issue = typeof req.body?.issue === 'string' ? req.body.issue.trim() : '';
+  const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!emailIsValid || email.length > 254 || issue.length < 10 || issue.length > 2000) {
+    res.status(400).json({ error: 'Please provide a valid email address and a message between 10 and 2,000 characters.' });
+    return;
+  }
+
+  const forwardedFor = req.headers['x-forwarded-for'];
+  const ip = (Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor?.split(',')[0])?.trim() || req.ip || 'unknown';
+  const now = Date.now();
+  const attempt = contactAttempts.get(ip);
+
+  if (attempt && attempt.resetAt > now && attempt.count >= CONTACT_MAX_ATTEMPTS) {
+    res.status(429).json({ error: 'Too many messages sent. Please try again in an hour.' });
+    return;
+  }
+
+  contactAttempts.set(ip, {
+    count: attempt && attempt.resetAt > now ? attempt.count + 1 : 1,
+    resetAt: attempt && attempt.resetAt > now ? attempt.resetAt : now + CONTACT_WINDOW_MS,
+  });
+
+  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const smtpPort = Number(process.env.SMTP_PORT || 465);
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+  const contactRecipient = process.env.CONTACT_TO_EMAIL;
+  const fromAddress = process.env.CONTACT_FROM_EMAIL || smtpUser;
+
+  if (!smtpUser || !smtpPass || !contactRecipient || !fromAddress) {
+    console.error('Contact email is not configured. Set SMTP_USER, SMTP_PASS, and CONTACT_TO_EMAIL.');
+    res.status(503).json({ error: 'The contact form is temporarily unavailable. Please try again later.' });
+    return;
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
+      auth: { user: smtpUser, pass: smtpPass },
+    });
+
+    const safeEmail = escapeHtml(email);
+    const safeIssue = escapeHtml(issue).replace(/\n/g, '<br />');
+    await transporter.sendMail({
+      from: `ApexListener Contact <${fromAddress}>`,
+      to: contactRecipient,
+      replyTo: email,
+      subject: `ApexListener contact request from ${email}`,
+      text: `Reply-to email: ${email}\n\nIssue:\n${issue}`,
+      html: `<h2>New ApexListener contact request</h2><p><strong>Reply-to email:</strong> ${safeEmail}</p><p><strong>Issue:</strong></p><p>${safeIssue}</p>`,
+    });
+    res.status(200).json({ message: 'Your message has been sent.' });
+  } catch (error) {
+    console.error('Unable to send contact email:', error);
+    res.status(502).json({ error: 'We could not send your message. Please try again later.' });
+  }
+});
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {

@@ -17,7 +17,7 @@ export function Navbar() {
         </Link>
 
         {/* Links */}
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+        <div className="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
           <Link href="/#how-it-works" className="hover:text-white transition-colors">
             How it works
           </Link>
@@ -29,6 +29,12 @@ export function Navbar() {
           </Link>
           <Link href="/blog" className="hover:text-white transition-colors flex items-center gap-1.5 font-semibold text-emerald-400">
             Blog
+          </Link>
+          <Link href="/contact" className="hover:text-white transition-colors">
+            Contact
+          </Link>
+          <Link href="/privacy" className="hover:text-white transition-colors">
+            Privacy
           </Link>
         </div>
 

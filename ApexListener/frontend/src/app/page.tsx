@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Play, ArrowRight, Loader2, Zap, Users, ListMusic, Plus, Minus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -448,10 +449,13 @@ export default function LandingPage() {
           </div>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-8 text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>
+          <div className="flex flex-wrap items-center gap-6 sm:gap-8 text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>
             <a href="#how-it-works" className="hover:text-white transition-colors">How it works</a>
             <a href="#features"     className="hover:text-white transition-colors">Features</a>
             <a href="#faq"          className="hover:text-white transition-colors">FAQ</a>
+            <Link href="/blog"     className="hover:text-white transition-colors">Blog</Link>
+            <Link href="/contact"  className="hover:text-white transition-colors">Contact</Link>
+            <Link href="/privacy"  className="hover:text-white transition-colors">Privacy</Link>
           </div>
         </div>
       </footer>
