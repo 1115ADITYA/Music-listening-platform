@@ -59,29 +59,41 @@ app.post('/contact', async (req, res) => {
     resetAt: attempt && attempt.resetAt > now ? attempt.resetAt : now + CONTACT_WINDOW_MS,
   });
 
-  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const smtpHost = (process.env.SMTP_HOST || 'smtp.gmail.com').trim();
   const smtpPort = Number(process.env.SMTP_PORT || 465);
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
-  const contactRecipient = process.env.CONTACT_TO_EMAIL;
-  const fromAddress = process.env.CONTACT_FROM_EMAIL || smtpUser;
+  const smtpUser = process.env.SMTP_USER?.trim();
+  // Strip any spaces that might be pasted in 16-character Google App Passwords
+  const smtpPass = process.env.SMTP_PASS?.replace(/\s+/g, '');
+  const contactRecipient = process.env.CONTACT_TO_EMAIL?.trim();
+  const fromAddress = process.env.CONTACT_FROM_EMAIL?.trim() || smtpUser;
 
   if (!smtpUser || !smtpPass || !contactRecipient || !fromAddress) {
     console.error('Contact email is not configured. Set SMTP_USER, SMTP_PASS, and CONTACT_TO_EMAIL.');
-    res.status(503).json({ error: 'The contact form is temporarily unavailable. Please try again later.' });
+    res.status(503).json({ error: 'The contact form is temporarily unavailable. Please set SMTP_USER, SMTP_PASS, and CONTACT_TO_EMAIL.' });
     return;
   }
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpPort === 465,
-      auth: { user: smtpUser, pass: smtpPass },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-    });
+    const isGmail = smtpHost.includes('gmail') || process.env.SMTP_SERVICE === 'gmail';
+    const transporter = nodemailer.createTransport(
+      isGmail
+        ? {
+            service: 'gmail',
+            auth: { user: smtpUser, pass: smtpPass },
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 10000,
+          }
+        : {
+            host: smtpHost,
+            port: smtpPort,
+            secure: smtpPort === 465,
+            auth: { user: smtpUser, pass: smtpPass },
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 10000,
+          }
+    );
 
     const safeEmail = escapeHtml(email);
     const safeIssue = escapeHtml(issue).replace(/\n/g, '<br />');
@@ -94,9 +106,16 @@ app.post('/contact', async (req, res) => {
       html: `<h2>New ApexListener contact request</h2><p><strong>Reply-to email:</strong> ${safeEmail}</p><p><strong>Issue:</strong></p><p>${safeIssue}</p>`,
     });
     res.status(200).json({ message: 'Your message has been sent.' });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Unable to send contact email:', error);
-    res.status(502).json({ error: 'We could not send your message. Please try again later.' });
+    const errMessage = String(error?.message || '');
+    const isAuthError = error?.code === 'EAUTH' || errMessage.includes('535') || errMessage.includes('Username and Password not accepted');
+    
+    if (isAuthError) {
+      res.status(502).json({ error: 'Email authentication failed. Please verify your SMTP_USER and 16-character Google App Password in environment variables.' });
+    } else {
+      res.status(502).json({ error: errMessage ? `Email service error: ${errMessage}` : 'We could not send your message. Please try again later.' });
+    }
   }
 });
 
