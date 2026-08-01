@@ -6,6 +6,12 @@ import cors from 'cors';
 import nodemailer from 'nodemailer';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
+import dns from 'dns';
+
+// Force Node.js to prefer IPv4 DNS resolution to prevent ENETUNREACH on IPv6 addresses
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 // Load local configuration without committing it. Hosted deployments should set
 // the same values through their provider's environment-variable settings.
@@ -78,21 +84,25 @@ app.post('/contact', async (req, res) => {
     const transporter = nodemailer.createTransport(
       isGmail
         ? {
-            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // TLS / STARTTLS
             auth: { user: smtpUser, pass: smtpPass },
+            family: 4, // Force IPv4 to prevent ENETUNREACH on IPv6 addresses
             connectionTimeout: 10000,
             greetingTimeout: 10000,
             socketTimeout: 10000,
-          }
+          } as any
         : {
             host: smtpHost,
             port: smtpPort,
             secure: smtpPort === 465,
             auth: { user: smtpUser, pass: smtpPass },
+            family: 4, // Force IPv4 to prevent ENETUNREACH on IPv6 addresses
             connectionTimeout: 10000,
             greetingTimeout: 10000,
             socketTimeout: 10000,
-          }
+          } as any
     );
 
     const safeEmail = escapeHtml(email);
